@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  filemover_fastapi:
+    build: fastapi/
+    ports: 
+      - 9001:9001
+    networks:
+      - deploy_network
+    volumes:
+      - /mnt/folder_source:/app/source:Z # :Z flag for RedHat volume mount permission
+      - /mnt/folder_target:/app/target:Z
+    container_name: filemover_fastapi
+
+  filemover_streamlit:
+    build: streamlit/
+    depends_on:
+      - filemover_fastapi
+    ports: 
+        - 9000:9000
+    networks:
+      - deploy_network
+    container_name: filemover_streamlit
+
+networks:
+  deploy_network:
+    driver: bridge
