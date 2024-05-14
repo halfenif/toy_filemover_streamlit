@@ -54,7 +54,7 @@ docker-compose up
 
 이 녀석을 [Home Assistant](https://www.home-assistant.io/) lovelace에 설정하고 친절(?)하게 알려준다면, 사용자가 스스로 MP3 Tag를 정리 할 수 있지 않을까요? (누구나 희망을 가지고 있다. 아마도.)
 
-### 셍각해볼만한 기술적 사항들
+### 생각해볼만한 기술적 사항들
 - streamlit은 진정 간편하게 UI(Front)를 구성할 수 있지만. 그것이 가지는 설계사상에 순응하며 구현 할 생각을 해야 속편하다 생각됩니다.
 - File upload, delete, Folder Add, Rename, Delete, Move가 필요하다고 생각하지만. File은 고민좀 해보고, Folder는 적절한 UI가 생각나지 않습니다.
 - logging은 구현하면서보니 아직까지 필요하지는 않았습니다.
