@@ -1,6 +1,6 @@
 from mpd import MPDClient
 from const import RESULT_FAIL
-from config import IS_DEBUG, MPD_SERVER_IP, MPD_SERVER_PORT, MPD_SERVER_TIMEOUT
+from config import IS_DEBUG, MPD_SERVER_IP, MPD_SERVER_PORT
 import inspect
 from RequestResult import RequestResult
 
