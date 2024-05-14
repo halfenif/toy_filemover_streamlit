@@ -137,7 +137,8 @@ def list_folder_and_file_by_path(rootType: str, pathEncode: str):
         if isdir(target_path):
             fileItems_folders = addFolder(fileItems_folders, rootType, target_path)
         else:
-            fileItems_files = addFile(fileItems_files, rootType, target_path)
+            if target_path.lower().endswith(".mp3"):
+                fileItems_files = addFile(fileItems_files, rootType, target_path)
 
     # Sort List
     fileItems_folders.sort(key=lambda x: x.file_name, reverse=False)

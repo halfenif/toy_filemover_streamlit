@@ -49,6 +49,7 @@ def fn_tag_info_submit():
     tagItem['fileBaseName'] = st.session_state['tagItem_fileBaseName']
     tagItem['fileExtName'] = st.session_state['tagItem_fileExtName']
     tagItem['tagTitle'] = st.session_state['tagItem_tagTitle']
+    tagItem['tagAlbum'] = st.session_state['tagItem_tagAlbum']
     tagItem['tagArtist'] = st.session_state['tagItem_tagArtist']
     tagItem['tagAlbumartist'] = st.session_state['tagItem_tagAlbumartist']
     tagItem['tagDate'] = st.session_state['tagItem_tagDate']
@@ -83,6 +84,7 @@ def fn_file_info(fileitem):
             st.text_input("File Base Name", result["fileBaseName"], key="tagItem_fileBaseName", max_chars=200)
             st.text_input("File Ext Name", result["fileExtName"], key="tagItem_fileExtName", max_chars=10, disabled=True)
             st.text_input("Title", result["tagTitle"], key="tagItem_tagTitle", max_chars=200)
+            st.text_input("Album", result["tagAlbum"], key="tagItem_tagAlbum", max_chars=200)
             st.text_input("Artist", result["tagArtist"], key="tagItem_tagArtist", max_chars=200)
             st.text_input("Albumartist", result["tagAlbumartist"], key="tagItem_tagAlbumartist", max_chars=200)
 
