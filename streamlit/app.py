@@ -1,5 +1,5 @@
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, PATH_TYPE_FOLDER, PATH_TYPE_FILE
-from config import TAG_DATE_BEGIN, TAG_TARCK_END, TAG_OPTION_WHIP, TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE, TAG_OPTION_MPD_UPDATE
+from config import TAG_DATE_BEGIN, TAG_TARCK_END, TAG_OPTION_WHIP, TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE, TAG_OPTION_MPD_UPDATE, UI_OPTION_SHORT_FILE_NAME, UI_OPTION_SHORT_FILE_LENGTH
 from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER, S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY, S_CURRENT_TAG_ITEM
 import streamlit as st
 from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
@@ -136,8 +136,13 @@ def fn_make_button_lable(fileitem):
         buttonEmoji = ":musical_note:"
     if fileitem["isParent"]:
         buttonEmoji = ":back:"
-    
-    return buttonEmoji + " " + fileitem["fileName"]
+
+
+    if UI_OPTION_SHORT_FILE_NAME and len(fileitem["fileName"]) > UI_OPTION_SHORT_FILE_LENGTH:
+        display_file_name = buttonEmoji + " " + str(fileitem["fileName"])[:UI_OPTION_SHORT_FILE_LENGTH] + "..."
+    else:
+        display_file_name = buttonEmoji + " " + fileitem["fileName"]
+    return display_file_name
 
 def fn_make_button_callback(fileitem):
     if fileitem["pathType"] == PATH_TYPE_FILE:
