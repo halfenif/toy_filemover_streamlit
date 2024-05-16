@@ -11,6 +11,7 @@ services:
       - /mnt/folder_source:/app/source:Z # :Z flag for RedHat volume mount permission
       - /mnt/folder_target:/app/target:Z
     container_name: filemover_fastapi
+    restart: always
 
   filemover_streamlit:
     build: streamlit/
@@ -21,6 +22,7 @@ services:
     networks:
       - deploy_network
     container_name: filemover_streamlit
+    restart: always
 
 networks:
   deploy_network:
