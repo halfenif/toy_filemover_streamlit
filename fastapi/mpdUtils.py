@@ -12,7 +12,7 @@ def mpd_update_file():
 
     try:
         client.connect(config.MPD_SERVER_IP, config.MPD_SERVER_PORT)
-        if IS_DEBUG:
+        if config.IS_DEBUG:
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] mpd_version:', client.mpd_version)        
 
             # filelist = client.lsinfo()
