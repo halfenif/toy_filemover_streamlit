@@ -104,16 +104,16 @@ def fn_file_info(fileitem):
                 st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=1, step=1)
 
             # Options-Whip
-            st.checkbox("Tag Whip(All tag clear before write)", key="tagItem_doWhip", value=config.TAG_OPTION_WHIP)
+            st.checkbox("Whip Tag :wastebasket: + :writing_hand:", key="tagItem_doWhip", value=config.TAG_OPTION_WHIP)
             
             # Options-Move To File
             if result["rootType"] == PATH_LOCATION_SOURCE:
-                st.checkbox(f"Move to : Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_SOURCE_TO_TARGET)
+                st.checkbox(f"Move to :file_folder: :blue[Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_SOURCE_TO_TARGET)
             elif result["rootType"] == PATH_LOCATION_TARGET:
-                st.checkbox(f"Move to : Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_TARGET_TO_SOURCE)
+                st.checkbox(f"Move to :file_folder: :blue[Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_TARGET_TO_SOURCE)
 
             # Options-MPD
-            st.checkbox("MPD Update", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
+            st.checkbox("MPD Update :satellite_antenna: :loud_sound:", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
 
             # Set Button
             st.form_submit_button(label='Submit', on_click=fn_tag_info_submit)
