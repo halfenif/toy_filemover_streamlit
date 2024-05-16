@@ -50,12 +50,8 @@ modal_taginfo = Modal(
     max_width=350  # default value
 )
 
-# Title
-st.title('Filemover for Home')
-
-# Colums
-c_source, c_target = st.columns(2, gap="small")
-
+#---------------------------------------------------------------------
+# Function
 
 def fn_file_info(fileitem):
     st.session_state["S_CURRENT_FILE_ITEM"] = fileitem
@@ -172,11 +168,21 @@ def fn_make_button_callback(fileitem):
     
 
 #---------------------------------------------------------------------
+# Title
+st.title('Filemover for Home')
+
+# Colums
+c_source, c_target = st.columns(2, gap="small")
+
 
 # Container Source
 with c_source:
     # Display
-    st.subheader(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}")
+    #st.subheader(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}")
+
+    st.button(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", key=uuid.uuid4())
+
+    c_source.divider()
 
     # Read File List
     status_code, result = list_folder_and_file_by_path(PATH_LOCATION_SOURCE, str(st.session_state[S_CURRENT_SOURCE_FOLDER]))
@@ -194,7 +200,10 @@ with c_source:
 
 # Container Target
 with c_target:
-    st.subheader(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}")
+    # st.subheader(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}")
+    st.button(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}", key=uuid.uuid4())
+    c_target.divider()    
+
     status_code, result = list_folder_and_file_by_path(PATH_LOCATION_TARGET, str(st.session_state[S_CURRENT_TARGET_FOLDER]))
 
     # debug
