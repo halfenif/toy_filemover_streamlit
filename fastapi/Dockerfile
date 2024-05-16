@@ -16,6 +16,7 @@ RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org mutagen
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org pathlib
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org python-mpd2
+RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org pydantic_settings
 
 
 COPY . /fastapi

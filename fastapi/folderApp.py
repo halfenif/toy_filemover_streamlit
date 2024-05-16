@@ -1,3 +1,7 @@
+# Load .env
+from env import Settings
+config = Settings()
+
 import os
 import datetime
 from genericpath import isdir
@@ -6,7 +10,6 @@ import inspect
 from pathlib import Path
 
 import const
-import config
 import fileUtils
 from FileItem import FileItem
 

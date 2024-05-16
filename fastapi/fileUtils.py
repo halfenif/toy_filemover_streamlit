@@ -1,3 +1,8 @@
+# Load .env
+from env import Settings
+config = Settings()
+
+# Import
 from fastapi import HTTPException
 import hashlib
 import base64
@@ -7,7 +12,6 @@ import shutil
 
 import inspect
 
-import config
 import const
 import fileUtils
 from pathlib import Path
@@ -60,20 +64,22 @@ def getPathReplace(pathType, path):
 
 def getPathRoot(pathType):
     # Debug
-    print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathType:', pathType)
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathType:', pathType)
 
     if pathType == const.PATH_LOCATION_SOURCE:
-        path_root = config.FOLDER_CONFIG[const.PATH_LOCATION_SOURCE]
+        path_root = const.FOLDER_CONFIG[const.PATH_LOCATION_SOURCE]
     elif pathType == const.PATH_LOCATION_TARGET:
-        path_root = config.FOLDER_CONFIG[const.PATH_LOCATION_TARGET]
+        path_root = const.FOLDER_CONFIG[const.PATH_LOCATION_TARGET]
     else:
 
         msg = "getPathRoot, pathType parameter not SOURCE or TARGET"
-        print(msg)
         raise HTTPException(status_code=500, detail=msg)
 
     # Debug
-    print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] path_root:', path_root)
+    # Debug
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] path_root:', path_root)
     return path_root
 
 def getFullPath(locationType: str, pathEncode: str):

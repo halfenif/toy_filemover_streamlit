@@ -14,6 +14,7 @@ RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org requests
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org requests-toolbelt
 RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org uuid
+RUN pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org pydantic_settings
 
 COPY . /streamlit
 

@@ -1,10 +1,11 @@
-#import mutagen
+# Load .env
+from env import Settings
+config = Settings()
 
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import EasyMP3
 
 import inspect
-import config
 from TagItem import TagItem
 from FileItem import FileItem
 

@@ -1,6 +1,9 @@
+# Load .env
+from env import Settings
+config = Settings()
+
 from mpd import MPDClient
 from const import RESULT_FAIL
-from config import IS_DEBUG, MPD_SERVER_IP, MPD_SERVER_PORT
 import inspect
 from RequestResult import RequestResult
 
@@ -8,7 +11,7 @@ def mpd_update_file():
     client = MPDClient()
 
     try:
-        client.connect(MPD_SERVER_IP, MPD_SERVER_PORT)
+        client.connect(config.MPD_SERVER_IP, config.MPD_SERVER_PORT)
         if IS_DEBUG:
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] mpd_version:', client.mpd_version)        
 

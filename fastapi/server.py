@@ -1,3 +1,9 @@
+# Load .env
+from env import Settings
+config = Settings()
+
+print(f'config.ENV_TYPE:{config.ENV_TYPE}')
+
 from fastapi import FastAPI, Depends
 import inspect
 
@@ -7,13 +13,19 @@ import tagApp
 from FileItem import FileItem
 from TagItem import TagItem
 
-import config
 
+
+# --------------------------------------------------------------
+# Application
 app = FastAPI(
     title="FastAPI for FileMover",
     description="""Wow""",
     version="0.1.0",
 )
+
+
+# --------------------------------------------------------------
+# Router
 
 # API Test
 @app.get("/api_test")

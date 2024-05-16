@@ -12,3 +12,8 @@ PATH_LOCATION_TARGET = "TARGET"
 RESULT_SUCCESS = "SUCCESS"
 RESULT_FAIL = "FAIL"
 
+# Docker Internal
+FOLDER_CONFIG = {
+    'SOURCE': '/app/source/',
+    'TARGET': '/app/target/'
+}

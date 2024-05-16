@@ -1,9 +1,12 @@
+# Load .env
+from env import Settings
+config = Settings()
+
 import os
 from genericpath import isdir
 import inspect
 
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, RESULT_FAIL
-import config
 import fileUtils
 from TagItem import TagItem
 from RequestResult import RequestResult

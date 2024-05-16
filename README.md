@@ -17,13 +17,17 @@ Default folder path **'/mnt/folder_source'** & **'/mnt/folder_target'**
 change docker-compose.yml file
 
 ## Change Config (Options)
-**fastapi/config.py**
+```bash
+cp ./fastapi/.env.sample ./fastapi/.env
+cp ./streamlit/.env.sample ./streamlit/.env
+```
+**fastapi/.env**
 - IS_DEBUG = True or False
 - MPD_SERVER_IP, MPD_SERVER_PORT = if you use MPD
 - UI_OPTION_SHORT_FILE_NAME=True or False. Button Label display option
 - UI_OPTION_SHORT_FILE_LENGTH=number. Display Label Char count
 
-**streamlit/config.py**
+**streamlit/.env**
 - URL_BACKEND = fastAPI container URL
 - TAG_DATE_BEGIN, TAG_TARCK_END = int tag default value
 - TAG_OPTION_WHIP = True or False. Check Box Defualt Value

@@ -1,5 +1,9 @@
+# Load .env
+from env import Settings
+config = Settings()
+
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, PATH_TYPE_FOLDER, PATH_TYPE_FILE
-from config import TAG_DATE_BEGIN, TAG_TARCK_END, TAG_OPTION_WHIP, TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE, TAG_OPTION_MPD_UPDATE
+#from config import TAG_DATE_BEGIN, TAG_TARCK_END, TAG_OPTION_WHIP, TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE, TAG_OPTION_MPD_UPDATE
 from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER, S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY, S_CURRENT_TAG_ITEM
 import streamlit as st
 from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
@@ -90,26 +94,26 @@ def fn_file_info(fileitem):
 
             year_end = datetime.now().year
             if result["tagDate"].isnumeric():
-                st.number_input(f"Year({TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=TAG_DATE_BEGIN, max_value=year_end, value=int(result["tagDate"]), step=1)
+                st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=int(result["tagDate"]), step=1)
             else:
-                st.number_input(f"Year({TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=TAG_DATE_BEGIN, max_value=year_end, value=TAG_DATE_BEGIN, step=1)
+                st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=config.TAG_DATE_BEGIN, step=1)
 
             if result["tagTracknumber"].isnumeric():
-                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=TAG_TARCK_END, value=int(result["tagTracknumber"]), step=1)
+                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=int(result["tagTracknumber"]), step=1)
             else:
-                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=TAG_TARCK_END, value=1, step=1)
+                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=1, step=1)
 
             # Options-Whip
-            st.checkbox("Tag Whip(All tag clear before write)", key="tagItem_doWhip", value=TAG_OPTION_WHIP)
+            st.checkbox("Tag Whip(All tag clear before write)", key="tagItem_doWhip", value=config.TAG_OPTION_WHIP)
             
             # Options-Move To File
             if result["rootType"] == PATH_LOCATION_SOURCE:
-                st.checkbox(f"Move to : Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}", key="tagItem_doMove", value=TAG_OPTION_MOVE_SOURCE_TO_TARGET)
+                st.checkbox(f"Move to : Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_SOURCE_TO_TARGET)
             elif result["rootType"] == PATH_LOCATION_TARGET:
-                st.checkbox(f"Move to : Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}", key="tagItem_doMove", value=TAG_OPTION_MOVE_TARGET_TO_SOURCE)
+                st.checkbox(f"Move to : Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_TARGET_TO_SOURCE)
 
             # Options-MPD
-            st.checkbox("MPD Update", key="tagItem_doMpdUpdate", value=TAG_OPTION_MPD_UPDATE)
+            st.checkbox("MPD Update", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
 
             # Set Button
             st.form_submit_button(label='Submit', on_click=fn_tag_info_submit)

@@ -1,11 +1,14 @@
+# Load .env
+from env import Settings
+config = Settings()
+
 import requests
 import streamlit as st
 import const
 import inspect
-from config import URL_BACKEND
 
 # interact with FastAPI endpoint
-backend = URL_BACKEND
+backend = config.URL_BACKEND
 
 
 ## Utils ----------------
