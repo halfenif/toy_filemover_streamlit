@@ -20,6 +20,7 @@ def addFile(fileItems, rootType, fullPath):
     fileItem.path_type = const.PATH_TYPE_FILE
     fileItem.file_path = fileUtils.getPathReplace(rootType, fullPath)
     fileItem.file_name = os.path.basename(fullPath)
+    fileItem.file_name_display = fileUtils.getDisplayFileName(fileItem.file_name)
     fileItem.file_base_name, fileItem.file_ext_name = os.path.splitext(fileItem.file_name)    
     file_mday = datetime.datetime.fromtimestamp(
         os.path.getmtime(fullPath)).strftime(const.DATE_FORMAT)
@@ -46,6 +47,7 @@ def addFolder(fileItems, rootType, fullPath):
     fileItem.path_type = const.PATH_TYPE_FOLDER
     fileItem.file_path = fileUtils.getPathReplace(rootType, fullPath)
     fileItem.file_name = os.path.basename(fullPath)
+    fileItem.file_name_display = fileUtils.getDisplayFileName(fileItem.file_name)
     fileItem.file_base_name = ""
     fileItem.file_ext_name = ""
     file_mday = datetime.datetime.fromtimestamp(
@@ -88,6 +90,7 @@ def addParentFolder(fileItems, pathCurrent, rootType):
     fileItem.path_type = const.PATH_TYPE_FOLDER
     fileItem.file_path = ""
     fileItem.file_name = ".."
+    fileItem.file_name_display = fileUtils.getDisplayFileName(fileItem.file_name)
     fileItem.file_base_name = ""
     fileItem.file_ext_name = ""
     fileItem.file_mday = ""

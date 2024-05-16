@@ -20,6 +20,8 @@ change docker-compose.yml file
 **fastapi/config.py**
 - IS_DEBUG = True or False
 - MPD_SERVER_IP, MPD_SERVER_PORT = if you use MPD
+- UI_OPTION_SHORT_FILE_NAME=True or False. Button Label display option
+- UI_OPTION_SHORT_FILE_LENGTH=number. Display Label Char count
 
 **streamlit/config.py**
 - URL_BACKEND = fastAPI container URL
@@ -27,8 +29,7 @@ change docker-compose.yml file
 - TAG_OPTION_WHIP = True or False. Check Box Defualt Value
 - TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE = True or False. Check Box Defualt Value
 - TAG_OPTION_MPD_UPDATE = True or False. Check Box Defualt Value
-- UI_OPTION_SHORT_FILE_NAME=True or False. Button Label display option
-- UI_OPTION_SHORT_FILE_LENGTH=number. Display Label Char count
+
 
 ### Docker-Compose
 ```bash
