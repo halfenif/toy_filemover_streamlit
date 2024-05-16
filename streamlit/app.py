@@ -9,6 +9,7 @@ import streamlit as st
 from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
 from datetime import datetime 
 import uuid
+from streamlit_modal import Modal
 
 # Session -------------------
 if S_CURRENT_SOURCE_FOLDER not in st.session_state:
@@ -39,89 +40,106 @@ Blog: [Enif's small talk](https://blog.enif.page/blog/)
     }
 )
 
+# Init Modal
+modal_taginfo = Modal(
+    "Taginfo Modal", 
+    key="modal-taginfo",
+    
+    # Optional
+    padding=5,    # default value
+    max_width=350  # default value
+)
+
 # Title
 st.title('Filemover for Home')
 
 # Colums
 c_source, c_target = st.columns(2, gap="small")
 
-def fn_tag_info_submit():
 
-    # st.error("이것은 에러 알림입니다.")
-    tagItem = st.session_state[S_CURRENT_TAG_ITEM]
-
-    tagItem['fileBaseName'] = st.session_state['tagItem_fileBaseName']
-    tagItem['fileExtName'] = st.session_state['tagItem_fileExtName']
-    tagItem['tagTitle'] = st.session_state['tagItem_tagTitle']
-    tagItem['tagAlbum'] = st.session_state['tagItem_tagAlbum']
-    tagItem['tagArtist'] = st.session_state['tagItem_tagArtist']
-    tagItem['tagAlbumartist'] = st.session_state['tagItem_tagAlbumartist']
-    tagItem['tagDate'] = st.session_state['tagItem_tagDate']
-    tagItem['tagTracknumber'] = st.session_state['tagItem_tagTracknumber']
-
-    tagItem['doWhip'] = st.session_state['tagItem_doWhip']
-    tagItem['doMove'] = st.session_state['tagItem_doMove']
-    tagItem['doMpdUpdate'] = st.session_state['tagItem_doMpdUpdate']
-
-    if tagItem['rootType'] == PATH_LOCATION_SOURCE:
-        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_TARGET_FOLDER]
-    elif tagItem['rootType'] == PATH_LOCATION_TARGET:
-        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_SOURCE_FOLDER]
-
-    #Set Tag
-    file_write_taginfo_by_path(tagItem)
-
-#@st.experimental_dialog("File Info")
 def fn_file_info(fileitem):
+    st.session_state["S_CURRENT_FILE_ITEM"] = fileitem
+    modal_taginfo.open()
+
+if modal_taginfo.is_open():
+
+    fileitem = st.session_state["S_CURRENT_FILE_ITEM"]
 
     #Get Tag
     status_code, result = file_read_taginfo_by_path(fileitem)
     
     if status_code == 200:
-        with st.form("fileInfoForm"):
+        with modal_taginfo.container():
+            with st.form("fileInfoForm"):
 
-            # Set Serssion
-            st.session_state[S_CURRENT_TAG_ITEM] = result
+                # Set Serssion
+                st.session_state[S_CURRENT_TAG_ITEM] = result
 
-            # Set Form
-            st.subheader(result["fileName"])
-            st.text_input("File Base Name", result["fileBaseName"], key="tagItem_fileBaseName", max_chars=200)
-            st.text_input("File Ext Name", result["fileExtName"], key="tagItem_fileExtName", max_chars=10, disabled=True)
-            st.text_input("Title", result["tagTitle"], key="tagItem_tagTitle", max_chars=200)
-            st.text_input("Album", result["tagAlbum"], key="tagItem_tagAlbum", max_chars=200)
-            st.text_input("Artist", result["tagArtist"], key="tagItem_tagArtist", max_chars=200)
-            st.text_input("Albumartist", result["tagAlbumartist"], key="tagItem_tagAlbumartist", max_chars=200)
+                # Set Form
+                st.subheader(result["fileName"])
+                st.text_input("File Base Name", result["fileBaseName"], key="tagItem_fileBaseName", max_chars=200)
+                st.text_input("File Ext Name", result["fileExtName"], key="tagItem_fileExtName", max_chars=10, disabled=True)
+                st.text_input("Title", result["tagTitle"], key="tagItem_tagTitle", max_chars=200)
+                st.text_input("Album", result["tagAlbum"], key="tagItem_tagAlbum", max_chars=200)
+                st.text_input("Artist", result["tagArtist"], key="tagItem_tagArtist", max_chars=200)
+                st.text_input("Albumartist", result["tagAlbumartist"], key="tagItem_tagAlbumartist", max_chars=200)
 
-            year_end = datetime.now().year
-            if result["tagDate"].isnumeric():
-                st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=int(result["tagDate"]), step=1)
-            else:
-                st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=config.TAG_DATE_BEGIN, step=1)
+                year_end = datetime.now().year
+                if result["tagDate"].isnumeric():
+                    st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=int(result["tagDate"]), step=1)
+                else:
+                    st.number_input(f"Year({config.TAG_DATE_BEGIN}~{year_end})", key="tagItem_tagDate", min_value=config.TAG_DATE_BEGIN, max_value=year_end, value=config.TAG_DATE_BEGIN, step=1)
 
-            if result["tagTracknumber"].isnumeric():
-                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=int(result["tagTracknumber"]), step=1)
-            else:
-                st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=1, step=1)
+                if result["tagTracknumber"].isnumeric():
+                    st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=int(result["tagTracknumber"]), step=1)
+                else:
+                    st.number_input("Tracknumber(1~20)", key="tagItem_tagTracknumber", min_value=1, max_value=config.TAG_TARCK_END, value=1, step=1)
 
-            # Options-Whip
-            st.checkbox("Whip Tag :wastebasket: + :writing_hand:", key="tagItem_doWhip", value=config.TAG_OPTION_WHIP)
-            
-            # Options-Move To File
-            if result["rootType"] == PATH_LOCATION_SOURCE:
-                st.checkbox(f"Move to :file_folder: :blue[Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_SOURCE_TO_TARGET)
-            elif result["rootType"] == PATH_LOCATION_TARGET:
-                st.checkbox(f"Move to :file_folder: :blue[Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_TARGET_TO_SOURCE)
+                # Options-Whip
+                st.checkbox("Whip Tag :wastebasket: + :writing_hand:", key="tagItem_doWhip", value=config.TAG_OPTION_WHIP)
+                
+                # Options-Move To File
+                if result["rootType"] == PATH_LOCATION_SOURCE:
+                    st.checkbox(f"Move to :file_folder: :blue[Target > {st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_SOURCE_TO_TARGET)
+                elif result["rootType"] == PATH_LOCATION_TARGET:
+                    st.checkbox(f"Move to :file_folder: :blue[Source > {st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]}]", key="tagItem_doMove", value=config.TAG_OPTION_MOVE_TARGET_TO_SOURCE)
 
-            # Options-MPD
-            st.checkbox("MPD Update :satellite_antenna: :loud_sound:", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
+                # Options-MPD
+                st.checkbox("MPD Update :satellite_antenna: :loud_sound:", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
 
-            # Set Button
-            st.form_submit_button(label='Submit', on_click=fn_tag_info_submit)
+                # Set Button
+                form_submited = st.form_submit_button(label='Submit')
+                if form_submited:
 
+                    tagItem = st.session_state[S_CURRENT_TAG_ITEM]
 
+                    tagItem['fileBaseName'] = st.session_state['tagItem_fileBaseName']
+                    tagItem['fileExtName'] = st.session_state['tagItem_fileExtName']
+                    tagItem['tagTitle'] = st.session_state['tagItem_tagTitle']
+                    tagItem['tagAlbum'] = st.session_state['tagItem_tagAlbum']
+                    tagItem['tagArtist'] = st.session_state['tagItem_tagArtist']
+                    tagItem['tagAlbumartist'] = st.session_state['tagItem_tagAlbumartist']
+                    tagItem['tagDate'] = st.session_state['tagItem_tagDate']
+                    tagItem['tagTracknumber'] = st.session_state['tagItem_tagTracknumber']
+
+                    tagItem['doWhip'] = st.session_state['tagItem_doWhip']
+                    tagItem['doMove'] = st.session_state['tagItem_doMove']
+                    tagItem['doMpdUpdate'] = st.session_state['tagItem_doMpdUpdate']
+
+                    if tagItem['rootType'] == PATH_LOCATION_SOURCE:
+                        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_TARGET_FOLDER]
+                    elif tagItem['rootType'] == PATH_LOCATION_TARGET:
+                        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_SOURCE_FOLDER]
+
+                    #Set Tag
+                    file_write_taginfo_by_path(tagItem)
+
+                    modal_taginfo.close()
+        # End Modal Logic. Stop
+        st.stop()
         
 
-#@st.experimental_dialog("Folder Info")
+
 def fn_folder_info(fileitem):
 
     if fileitem["rootType"] == PATH_LOCATION_SOURCE:

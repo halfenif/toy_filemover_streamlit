@@ -152,10 +152,6 @@ def getDisplayFileName(inputFileName):
             fileNameLen+=2
         else:
             fileNameLen+=1
-
-        # Debug
-        if config.IS_DEBUG:
-            print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] item:{item}, unicode_result:{unicode_result}, fileNameLen:{fileNameLen}')
         
         if fileNameLen > config.UI_OPTION_SHORT_FILE_LENGTH:
             return outputFileName + "..."
