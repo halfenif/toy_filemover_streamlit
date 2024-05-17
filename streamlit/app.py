@@ -143,41 +143,45 @@ if st.session_state[S_SB_TAG_SELECT]:
                 st.checkbox("MPD Update :satellite_antenna: :loud_sound:", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
 
                 # Set Button
-                form_submited = st.form_submit_button(label='Submit')
-                if form_submited:
+                btn_col1, btn_col2 = st.columns([1,1])
 
-                    tagItem = st.session_state[S_CURRENT_TAG_ITEM]
+                with btn_col1:
+                    form_submited = st.form_submit_button(label='Submit')
+                    if form_submited:
 
-                    tagItem['fileBaseName'] = st.session_state['tagItem_fileBaseName']
-                    tagItem['fileExtName'] = st.session_state['tagItem_fileExtName']
-                    tagItem['tagTitle'] = st.session_state['tagItem_tagTitle']
-                    tagItem['tagAlbum'] = st.session_state['tagItem_tagAlbum']
-                    tagItem['tagArtist'] = st.session_state['tagItem_tagArtist']
-                    tagItem['tagAlbumartist'] = st.session_state['tagItem_tagAlbumartist']
-                    tagItem['tagDate'] = st.session_state['tagItem_tagDate']
-                    tagItem['tagTracknumber'] = st.session_state['tagItem_tagTracknumber']
+                        tagItem = st.session_state[S_CURRENT_TAG_ITEM]
 
-                    tagItem['doWhip'] = st.session_state['tagItem_doWhip']
-                    tagItem['doMove'] = st.session_state['tagItem_doMove']
-                    tagItem['doMpdUpdate'] = st.session_state['tagItem_doMpdUpdate']
+                        tagItem['fileBaseName'] = st.session_state['tagItem_fileBaseName']
+                        tagItem['fileExtName'] = st.session_state['tagItem_fileExtName']
+                        tagItem['tagTitle'] = st.session_state['tagItem_tagTitle']
+                        tagItem['tagAlbum'] = st.session_state['tagItem_tagAlbum']
+                        tagItem['tagArtist'] = st.session_state['tagItem_tagArtist']
+                        tagItem['tagAlbumartist'] = st.session_state['tagItem_tagAlbumartist']
+                        tagItem['tagDate'] = st.session_state['tagItem_tagDate']
+                        tagItem['tagTracknumber'] = st.session_state['tagItem_tagTracknumber']
 
-                    if tagItem['rootType'] == PATH_LOCATION_SOURCE:
-                        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_TARGET_FOLDER]
-                    elif tagItem['rootType'] == PATH_LOCATION_TARGET:
-                        tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_SOURCE_FOLDER]
+                        tagItem['doWhip'] = st.session_state['tagItem_doWhip']
+                        tagItem['doMove'] = st.session_state['tagItem_doMove']
+                        tagItem['doMpdUpdate'] = st.session_state['tagItem_doMpdUpdate']
 
-                    #Set Tag
-                    file_write_taginfo_by_path(tagItem)
+                        if tagItem['rootType'] == PATH_LOCATION_SOURCE:
+                            tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_TARGET_FOLDER]
+                        elif tagItem['rootType'] == PATH_LOCATION_TARGET:
+                            tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_SOURCE_FOLDER]
 
-                    st.session_state[S_SB_TAG_SELECT] = False
-                    st.session_state[S_SB_STATE] = "collapsed"
-                    st.rerun()
+                        #Set Tag
+                        file_write_taginfo_by_path(tagItem)
 
-                form_canceled = st.form_submit_button(label='Cancel')
-                if form_canceled:
-                    st.session_state[S_SB_TAG_SELECT] = False
-                    st.session_state[S_SB_STATE] = "collapsed"
-                    st.rerun()
+                        st.session_state[S_SB_TAG_SELECT] = False
+                        st.session_state[S_SB_STATE] = "collapsed"
+                        st.rerun()
+
+                with btn_col2:
+                    form_canceled = st.form_submit_button(label='Cancel')
+                    if form_canceled:
+                        st.session_state[S_SB_TAG_SELECT] = False
+                        st.session_state[S_SB_STATE] = "collapsed"
+                        st.rerun()
 
 
         # End Modal Logic. Stop
@@ -209,6 +213,9 @@ def fn_make_button_lable(fileitem):
         
     return display_file_name
 
+def fn_make_root_lable(rootType: str, folderPath: str):
+    return f":card_file_box: {rootType} > {folderPath}"
+
 #---------------------------------------------------------------------
 def fn_make_button_callback(fileitem):
     if fileitem["pathType"] == PATH_TYPE_FILE:
@@ -234,7 +241,8 @@ if st.session_state[S_SB_FOLDER_SELECT]:
 
     with st.sidebar:
         with st.container(border=True):
-            st.subheader(f"{st.session_state[S_CURRENT_ROOT_TYPE]} > " + folderName)
+            # st.subheader(f"{st.session_state[S_CURRENT_ROOT_TYPE]} > " + folderName)
+            st.subheader(fn_make_root_lable(str(st.session_state[S_CURRENT_ROOT_TYPE]), folderName))
 
             r_item_rename: str = "Rename Current Folder"
             r_item_addSub: str = "Add Sub Folder"
@@ -265,17 +273,21 @@ if st.session_state[S_SB_FOLDER_SELECT]:
                 input_file = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])  # upload widget
 
             # Set Button
-            form_submited = st.button(label='Submit')
-            if form_submited:
-                st.session_state[S_SB_FOLDER_SELECT] = False
-                st.session_state[S_SB_STATE] = "collapsed"
-                st.rerun()  
+            btn_col1, btn_col2 = st.columns([1,1])
 
-            form_canceled = st.button(label='Cancel')
-            if form_canceled:
-                st.session_state[S_SB_FOLDER_SELECT] = False
-                st.session_state[S_SB_STATE] = "collapsed"
-                st.rerun()
+            with btn_col1:
+                form_submited = st.button(label='Submit')
+                if form_submited:
+                    st.session_state[S_SB_FOLDER_SELECT] = False
+                    st.session_state[S_SB_STATE] = "collapsed"
+                    st.rerun()  
+
+            with btn_col2:
+                form_canceled = st.button(label='Cancel')
+                if form_canceled:
+                    st.session_state[S_SB_FOLDER_SELECT] = False
+                    st.session_state[S_SB_STATE] = "collapsed"
+                    st.rerun()
 
         st.stop()
 
@@ -291,10 +303,8 @@ c_source, c_target = st.columns(2, gap="small")
 
 # Container Source
 with c_source:
-    # Display
-    #st.subheader(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}")
     c_source.divider()
-    st.button(f":card_file_box: Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", 
+    st.button( fn_make_root_lable(PATH_LOCATION_SOURCE, str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])), 
               on_click=fn_header_folder_select,
               args=[PATH_LOCATION_SOURCE],
               key=uuid.uuid4())
@@ -317,9 +327,8 @@ with c_source:
 
 # Container Target
 with c_target:
-    # st.subheader(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}")
     c_target.divider()    
-    st.button(f":card_file_box: Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}",
+    st.button(fn_make_root_lable(PATH_LOCATION_TARGET, str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])),
               on_click=fn_header_folder_select,
               args=[PATH_LOCATION_TARGET],
               key=uuid.uuid4())
