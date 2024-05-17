@@ -44,9 +44,15 @@ st.set_page_config(
 
 ---
 
-GitHub: [halfenif/test_streamlit_fastapi](https://github.com/halfenif/toy_filemover_streamlit)
+GitHub: [halfenif/toy_filemover_streamlit](https://github.com/halfenif/toy_filemover_streamlit)
 
 Blog: [Enif's small talk](https://blog.enif.page/blog/)
+
+---
+
+[YoutubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material) : Material Design frontend for youtube-dl.  
+[MPD](https://www.musicpd.org/) : Music Player Daemon.  
+[Home Assistant](https://www.home-assistant.io/) : My favorite Home Automation platform.  
 
 ---
 
@@ -75,9 +81,9 @@ def fn_file_select(fileitem):
     st.session_state[S_SB_STATE] = "expanded"
 
 if st.session_state[S_SB_TAG_SELECT]:
-
+    st.title(config.UI_OPTION_TITLE)
     #Reload Button for not submit escape
-    button_reload = st.button("Reload")
+    button_reload = st.button(":arrows_counterclockwise: Reload")
     if button_reload:
         st.session_state[S_SB_TAG_SELECT] = False
         st.session_state[S_SB_STATE] = "collapsed"        
@@ -203,8 +209,9 @@ def fn_header_folder_select(rootType):
     st.session_state[S_SB_STATE] = "expanded"    
 
 if st.session_state[S_SB_FOLDER_SELECT]:
+    st.title(config.UI_OPTION_TITLE)
     #Reload Button for not submit escape
-    button_reload = st.button("Reload")
+    button_reload = st.button(":arrows_counterclockwise: Reload")
     if button_reload:
         st.session_state[S_SB_FOLDER_SELECT] = False
         st.session_state[S_SB_STATE] = "collapsed"        
@@ -225,7 +232,7 @@ if st.session_state[S_SB_FOLDER_SELECT]:
 
 #---------------------------------------------------------------------
 # Title
-st.title('Filemover for Home')
+st.title(config.UI_OPTION_TITLE)
 
 # Colums
 c_source, c_target = st.columns(2, gap="small")
@@ -236,7 +243,7 @@ with c_source:
     # Display
     #st.subheader(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}")
     c_source.divider()
-    st.button(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", 
+    st.button(f":card_file_box: Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", 
               on_click=fn_header_folder_select,
               args=[PATH_LOCATION_SOURCE],
               key=uuid.uuid4())
@@ -261,7 +268,7 @@ with c_source:
 with c_target:
     # st.subheader(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}")
     c_target.divider()    
-    st.button(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}",
+    st.button(f":card_file_box: Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}",
               on_click=fn_header_folder_select,
               args=[PATH_LOCATION_TARGET],
               key=uuid.uuid4())
