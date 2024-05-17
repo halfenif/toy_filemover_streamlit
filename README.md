@@ -31,6 +31,9 @@ cp ./streamlit/.env.sample ./streamlit/.env
 **streamlit/.env**
 - ENV_TYPE = ".env.sample" > ".env" Display Information
 - URL_BACKEND = fastAPI container URL
+- UI_OPTION_TITLE = str, st.title(), if "" is None
+- UI_OPTION_DESC = str, st.write(), if "" is None
+- UI_OPTION_SIDEBAR_WIDTH = int, st.sidebar width
 - TAG_DATE_BEGIN, TAG_TARCK_END = int tag default value
 - TAG_OPTION_WHIP = True or False. Check Box Defualt Value
 - TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE = True or False. Check Box Defualt Value

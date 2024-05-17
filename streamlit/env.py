@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     URL_BACKEND: str
     IS_DEBUG: bool
     UI_OPTION_TITLE: str
+    UI_OPTION_DESC: str
+    UI_OPTION_SIDEBAR_WIDTH: int
     TAG_DATE_BEGIN: int
     TAG_TARCK_END: int
     TAG_OPTION_WHIP: bool

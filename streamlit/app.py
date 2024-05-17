@@ -60,20 +60,34 @@ Blog: [Enif's small talk](https://blog.enif.page/blog/)
     }
 )
 
+
+
 # Sidebar Width
 st.markdown(
-    """
-    <style>
-        section[data-testid="stSidebar"] {
-            width: 400px !important; # Set the width to your desired value
-        }
-    </style>
-    """,
+    "<style> section[data-testid='stSidebar'] { width: " + f"{config.UI_OPTION_SIDEBAR_WIDTH}" + "px !important; } </style>",
     unsafe_allow_html=True,
 )
 
 #---------------------------------------------------------------------
 # Function
+
+def fn_display_page_header(isAddReload: bool):
+
+    # Title
+    if config.UI_OPTION_TITLE:
+        st.title(config.UI_OPTION_TITLE)
+    
+    if config.UI_OPTION_DESC:
+        st.write(config.UI_OPTION_DESC)
+    
+    if isAddReload:
+        #Reload Button for not submit escape
+        button_reload = st.button(":arrows_counterclockwise: Reload")
+        if button_reload:
+            st.session_state[S_SB_TAG_SELECT] = False
+            st.session_state[S_SB_FOLDER_SELECT] = False
+            st.session_state[S_SB_STATE] = "collapsed"        
+            st.rerun()
 
 def fn_file_select(fileitem):
     st.session_state[S_SB_TAG_SELECT]=True
@@ -81,13 +95,8 @@ def fn_file_select(fileitem):
     st.session_state[S_SB_STATE] = "expanded"
 
 if st.session_state[S_SB_TAG_SELECT]:
-    st.title(config.UI_OPTION_TITLE)
-    #Reload Button for not submit escape
-    button_reload = st.button(":arrows_counterclockwise: Reload")
-    if button_reload:
-        st.session_state[S_SB_TAG_SELECT] = False
-        st.session_state[S_SB_STATE] = "collapsed"        
-        st.rerun()
+    # Page Header
+    fn_display_page_header(True)
 
     fileitem = st.session_state[S_CURRENT_FILE_ITEM]
 
@@ -162,7 +171,13 @@ if st.session_state[S_SB_TAG_SELECT]:
 
                     st.session_state[S_SB_TAG_SELECT] = False
                     st.session_state[S_SB_STATE] = "collapsed"
-                    st.rerun()                    
+                    st.rerun()
+
+                form_canceled = st.form_submit_button(label='Cancel')
+                if form_canceled:
+                    st.session_state[S_SB_TAG_SELECT] = False
+                    st.session_state[S_SB_STATE] = "collapsed"
+                    st.rerun()
 
 
         # End Modal Logic. Stop
@@ -209,13 +224,10 @@ def fn_header_folder_select(rootType):
     st.session_state[S_SB_STATE] = "expanded"    
 
 if st.session_state[S_SB_FOLDER_SELECT]:
-    st.title(config.UI_OPTION_TITLE)
-    #Reload Button for not submit escape
-    button_reload = st.button(":arrows_counterclockwise: Reload")
-    if button_reload:
-        st.session_state[S_SB_FOLDER_SELECT] = False
-        st.session_state[S_SB_STATE] = "collapsed"        
-        st.rerun()
+    # Page Header
+    fn_display_page_header(True)
+
+
 
     with st.sidebar:
         with st.form("folderInfoForm"):
@@ -231,11 +243,13 @@ if st.session_state[S_SB_FOLDER_SELECT]:
         st.stop()
 
 #---------------------------------------------------------------------
-# Title
-st.title(config.UI_OPTION_TITLE)
+
+# Page Header
+fn_display_page_header(False)
 
 # Colums
 c_source, c_target = st.columns(2, gap="small")
+
 
 
 # Container Source
