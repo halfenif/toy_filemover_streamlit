@@ -3,15 +3,28 @@ from env import Settings
 config = Settings()
 
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, PATH_TYPE_FOLDER, PATH_TYPE_FILE
-#from config import TAG_DATE_BEGIN, TAG_TARCK_END, TAG_OPTION_WHIP, TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE, TAG_OPTION_MPD_UPDATE
-from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER, S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY, S_CURRENT_TAG_ITEM
+
+from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER # rerun() 했을 때 화면 갱신용
+from session import S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY # rerun() 했을 때 화면 갱신용
+from session import S_CURRENT_TAG_ITEM # Tag Sidebar > API Server용
+from session import S_CURRENT_FILE_ITEM # List > Tag Sidebar용
+from session import S_CURRENT_ROOT_TYPE # 상단의 Header Folder용
+from session import S_SB_STATE, S_SB_TAG_SELECT, S_SB_FOLDER_SELECT # Modal대신 Sidebar를 사용하긿 함
+
 import streamlit as st
 from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
 from datetime import datetime 
 import uuid
-from streamlit_modal import Modal
+
 
 # Session -------------------
+if S_SB_STATE not in st.session_state:
+    st.session_state[S_SB_STATE] = "collapsed"
+if S_SB_TAG_SELECT not in st.session_state:
+    st.session_state[S_SB_TAG_SELECT] = False
+if S_SB_FOLDER_SELECT not in st.session_state:
+    st.session_state[S_SB_FOLDER_SELECT] = False
+
 if S_CURRENT_SOURCE_FOLDER not in st.session_state:
     st.session_state[S_CURRENT_SOURCE_FOLDER] = ''
     st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = ''
@@ -23,6 +36,7 @@ if S_CURRENT_TARGET_FOLDER not in st.session_state:
 st.set_page_config(
     page_title="Filemover for Home",
     page_icon=":musical_note:",
+    initial_sidebar_state=st.session_state[S_SB_STATE],
     menu_items={
         'About': """
 # Filemover for Home
@@ -40,32 +54,42 @@ Blog: [Enif's small talk](https://blog.enif.page/blog/)
     }
 )
 
-# Init Modal
-modal_taginfo = Modal(
-    "Taginfo Modal", 
-    key="modal-taginfo",
-    
-    # Optional
-    padding=5,    # default value
-    max_width=350  # default value
+# Sidebar Width
+st.markdown(
+    """
+    <style>
+        section[data-testid="stSidebar"] {
+            width: 400px !important; # Set the width to your desired value
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 #---------------------------------------------------------------------
 # Function
 
-def fn_file_info(fileitem):
-    st.session_state["S_CURRENT_FILE_ITEM"] = fileitem
-    modal_taginfo.open()
+def fn_file_select(fileitem):
+    st.session_state[S_SB_TAG_SELECT]=True
+    st.session_state[S_CURRENT_FILE_ITEM] = fileitem
+    st.session_state[S_SB_STATE] = "expanded"
 
-if modal_taginfo.is_open():
+if st.session_state[S_SB_TAG_SELECT]:
 
-    fileitem = st.session_state["S_CURRENT_FILE_ITEM"]
+    #Reload Button for not submit escape
+    button_reload = st.button("Reload")
+    if button_reload:
+        st.session_state[S_SB_TAG_SELECT] = False
+        st.session_state[S_SB_STATE] = "collapsed"        
+        st.rerun()
+
+    fileitem = st.session_state[S_CURRENT_FILE_ITEM]
 
     #Get Tag
     status_code, result = file_read_taginfo_by_path(fileitem)
     
     if status_code == 200:
-        with modal_taginfo.container():
+        with st.sidebar:
             with st.form("fileInfoForm"):
 
                 # Set Serssion
@@ -130,14 +154,18 @@ if modal_taginfo.is_open():
                     #Set Tag
                     file_write_taginfo_by_path(tagItem)
 
-                    modal_taginfo.close()
+                    st.session_state[S_SB_TAG_SELECT] = False
+                    st.session_state[S_SB_STATE] = "collapsed"
+                    st.rerun()                    
+
+
         # End Modal Logic. Stop
         st.stop()
         
 
-
-def fn_folder_info(fileitem):
-
+#---------------------------------------------------------------------
+def fn_folder_select(fileitem):
+    # Body Folder Select
     if fileitem["rootType"] == PATH_LOCATION_SOURCE:
         st.session_state[S_CURRENT_SOURCE_FOLDER] = fileitem["pathEncode"]
         st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = fileitem["folderCurrent"]
@@ -145,6 +173,7 @@ def fn_folder_info(fileitem):
         st.session_state[S_CURRENT_TARGET_FOLDER] = fileitem["pathEncode"]
         st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = fileitem["folderCurrent"]
 
+#---------------------------------------------------------------------
 def fn_make_button_lable(fileitem):
 
     buttonEmoji = ""
@@ -159,13 +188,40 @@ def fn_make_button_lable(fileitem):
         
     return display_file_name
 
+#---------------------------------------------------------------------
 def fn_make_button_callback(fileitem):
     if fileitem["pathType"] == PATH_TYPE_FILE:
-        return fn_file_info
+        return fn_file_select
     else:
-        return fn_folder_info
+        return fn_folder_select
     
-    
+#---------------------------------------------------------------------    
+def fn_header_folder_select(rootType):
+    # Header Folder Select
+    st.session_state[S_SB_FOLDER_SELECT]=True
+    st.session_state[S_CURRENT_ROOT_TYPE] = rootType
+    st.session_state[S_SB_STATE] = "expanded"    
+
+if st.session_state[S_SB_FOLDER_SELECT]:
+    #Reload Button for not submit escape
+    button_reload = st.button("Reload")
+    if button_reload:
+        st.session_state[S_SB_FOLDER_SELECT] = False
+        st.session_state[S_SB_STATE] = "collapsed"        
+        st.rerun()
+
+    with st.sidebar:
+        with st.form("folderInfoForm"):
+        
+            st.subheader("Folder관련 기능 구현 예정")
+            # Set Button
+            form_submited = st.form_submit_button(label='Submit')
+            if form_submited:
+                st.session_state[S_SB_FOLDER_SELECT] = False
+                st.session_state[S_SB_STATE] = "collapsed"
+                st.rerun()  
+
+        st.stop()
 
 #---------------------------------------------------------------------
 # Title
@@ -179,10 +235,13 @@ c_source, c_target = st.columns(2, gap="small")
 with c_source:
     # Display
     #st.subheader(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}")
-
-    st.button(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", key=uuid.uuid4())
-
     c_source.divider()
+    st.button(f"Source >{str(st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY])}", 
+              on_click=fn_header_folder_select,
+              args=[PATH_LOCATION_SOURCE],
+              key=uuid.uuid4())
+
+    
 
     # Read File List
     status_code, result = list_folder_and_file_by_path(PATH_LOCATION_SOURCE, str(st.session_state[S_CURRENT_SOURCE_FOLDER]))
@@ -201,8 +260,12 @@ with c_source:
 # Container Target
 with c_target:
     # st.subheader(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}")
-    st.button(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}", key=uuid.uuid4())
     c_target.divider()    
+    st.button(f"Target >{str(st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY])}",
+              on_click=fn_header_folder_select,
+              args=[PATH_LOCATION_TARGET],
+              key=uuid.uuid4())
+    
 
     status_code, result = list_folder_and_file_by_path(PATH_LOCATION_TARGET, str(st.session_state[S_CURRENT_TARGET_FOLDER]))
 
