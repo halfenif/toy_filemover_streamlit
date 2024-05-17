@@ -15,7 +15,7 @@ import streamlit as st
 from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
 from datetime import datetime 
 import uuid
-
+import os
 
 # Session -------------------
 if S_SB_STATE not in st.session_state:
@@ -227,18 +227,55 @@ if st.session_state[S_SB_FOLDER_SELECT]:
     # Page Header
     fn_display_page_header(True)
 
-
+    if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
+        folderName = st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY]
+    elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
+        folderName = st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY]
 
     with st.sidebar:
-        with st.form("folderInfoForm"):
-        
-            st.subheader("Folder관련 기능 구현 예정")
+        with st.container(border=True):
+            st.subheader(f"{st.session_state[S_CURRENT_ROOT_TYPE]} > " + folderName)
+
+            r_item_rename: str = "Rename Current Folder"
+            r_item_addSub: str = "Add Sub Folder"
+            r_item_delete: str = "Delete Current Folder :boom:"
+            r_item_upload: str = "Upload File to Current Folder :mag:"
+
+            if not folderName:
+                folderBaseName = ""
+                genre = st.radio(
+                    "Select Action",
+                    [r_item_addSub, r_item_upload])
+            else:
+                folderBaseName = os.path.basename(folderName)
+                genre = st.radio(
+                    "Select Action",
+                    [r_item_rename, r_item_addSub, r_item_delete, r_item_upload])
+
+            # Rename Base
+            if genre == r_item_rename:
+                st.text_input("Folder Name", folderBaseName, key="folderItem_folderBaseName", max_chars=200, disabled=False)
+
+            # Add Child Folder
+            elif genre == r_item_addSub:
+                st.text_input("Sub Folder Name", "", key="folderItem_subFolderBaseName", max_chars=200)
+                        
+            # Upload File
+            elif genre == r_item_upload:
+                input_file = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])  # upload widget
+
             # Set Button
-            form_submited = st.form_submit_button(label='Submit')
+            form_submited = st.button(label='Submit')
             if form_submited:
                 st.session_state[S_SB_FOLDER_SELECT] = False
                 st.session_state[S_SB_STATE] = "collapsed"
                 st.rerun()  
+
+            form_canceled = st.button(label='Cancel')
+            if form_canceled:
+                st.session_state[S_SB_FOLDER_SELECT] = False
+                st.session_state[S_SB_STATE] = "collapsed"
+                st.rerun()
 
         st.stop()
 
