@@ -17,6 +17,7 @@ from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_wr
 from datetime import datetime 
 import uuid
 import os
+import utils
 
 # Session -------------------
 if S_SB_STATE not in st.session_state:
@@ -284,13 +285,11 @@ if st.session_state[S_SB_FOLDER_SELECT]:
                 form_submited = st.button(label='Submit')
                 if form_submited:
 
-
                     # Param Class
                     folderItem = {}
-
                     folderItem["rootType"] = st.session_state[S_CURRENT_ROOT_TYPE]
-                    
 
+                    # 
                     if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
                         folderItem["pathEncode"] = st.session_state[S_CURRENT_SOURCE_FOLDER]
                     elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
@@ -299,7 +298,11 @@ if st.session_state[S_SB_FOLDER_SELECT]:
                     # Request Control
                     if genre == r_item_rename:
                         folderItem["folderCommand"] = FOLDER_ACTION_RENAME_CURRENT
-                        folderItem["newFolderName"] = folder_item_rename
+                        encode_status, encode_new_folder = utils.getPathEncode(folder_item_rename)
+                        if encode_status:
+                            st.stop()
+
+                        folderItem["newFolderNameEncode"] = encode_new_folder
                         status_code, result = folder_action(folderItem)
 
                         if not status_code == 200:
@@ -307,25 +310,25 @@ if st.session_state[S_SB_FOLDER_SELECT]:
 
                         if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
                             st.session_state[S_CURRENT_SOURCE_FOLDER] = result["pathEncode"]
-                            st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = result["newFolderName"]
+                            st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = result["newFolderNameDisplay"]
                         elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
                             st.session_state[S_CURRENT_TARGET_FOLDER] = result["pathEncode"]
-                            st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = result["newFolderName"]
+                            st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = result["newFolderNameDisplay"]
                             
                             
 
 
                     elif genre == r_item_addSub:
                         folderItem["folderCommand"] = FOLDER_ACTION_ADD_SUB_FOLDER
-                        folderItem["newFolderName"] = folder_item_add_sub
+                        folderItem["newFolderNameEncode"] = folder_item_add_sub
                         folder_action(folderItem)
                     elif genre == r_item_delete:
                         folderItem["folderCommand"] = FOLDER_ACTION_DELETE_CURRENT
-                        folderItem["newFolderName"] = ""
+                        folderItem["newFolderNameEncode"] = ""
                         folder_action(folderItem)
                     elif genre == r_item_upload:
                         folderItem["folderCommand"] = FOLDER_ACTION_UPLOAD_FILE
-                        folderItem["newFolderName"] = ""
+                        folderItem["newFolderNameEncode"] = ""
 
                     # Sidebar Control
                     st.session_state[S_SB_FOLDER_SELECT] = False

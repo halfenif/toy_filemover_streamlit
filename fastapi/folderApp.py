@@ -181,34 +181,36 @@ def folder_action(folderItem: FolderItem):
     # Check
     if fullPathState:
         return fullPathState
+    
+    new_folder_name = fileUtils.getPathDecode(folderItem.new_folder_name_encode)
 
     if folderItem.folder_command == const.FOLDER_ACTION_RENAME_CURRENT:
         # Check
         if isRoot:
-            requestResult.msg = f"Root Folder에 대한 수정은 허용되지 않습니다.[{folderItem.new_folder_name}]"
+            requestResult.msg = f"Root Folder에 대한 수정은 허용되지 않습니다.[{new_folder_name}]"
             return requestResult
         
         # Get Base Folder
         baseFolder = os.path.basename(fullPathFrom)
 
-        if folderItem.new_folder_name == baseFolder:
-            requestResult.msg = f"기존 Folder명과 동일합니다.[{folderItem.new_folder_name}]"
+        if new_folder_name == baseFolder:
+            requestResult.msg = f"기존 Folder명과 동일합니다.[{new_folder_name}]"
             return requestResult
 
         # New Folder Check        
-        if not fileUtils.is_valid_filename(folderItem.new_folder_name):
-            requestResult.msg = f"유효하지 않은 Folder명입니다.[{folderItem.new_folder_name}]"
+        if not fileUtils.is_valid_filename(new_folder_name):
+            requestResult.msg = f"유효하지 않은 Folder명입니다.[{new_folder_name}]"
             return requestResult
         
         pathParent = Path(fullPathFrom).parent.__str__()
-        fullPathTo = os.path.join(pathParent, folderItem.new_folder_name)
+        fullPathTo = os.path.join(pathParent, new_folder_name)
 
         requestResult = fileUtils.mvFolder(fullPathFrom, fullPathTo)
         if requestResult:
             return requestResult
         
         folderItem.path_encode = fileUtils.getPathEncode(fileUtils.getPathReplace(folderItem.root_type, fullPathTo))
-        folderItem.new_folder_name = fileUtils.getDisplayFileName(folderItem.new_folder_name)
+        folderItem.new_folder_name_display = fileUtils.getDisplayFileName(new_folder_name)
 
         if config.IS_DEBUG:
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] folderItem Return:', folderItem)            
