@@ -14,8 +14,8 @@ RESULT_FAIL = "FAIL"
 
 # Docker Internal
 FOLDER_CONFIG = {
-    'SOURCE': '/app/source/',
-    'TARGET': '/app/target/'
+    'SOURCE': '/app/source',
+    'TARGET': '/app/target'
 }
 
 FOLDER_ACTION_RENAME_CURRENT="R"

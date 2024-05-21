@@ -101,17 +101,21 @@ def addParentFolder(fileItems, pathCurrent, rootType):
     fileItem.file_mday = ""
     fileItem.file_size = ""  # Calc FileInfo
 
-    if pathParent == pathRoot:
-        fileItem.path_encode = fileUtils.getPathEncode("")
-    else:
-        fileItem.path_encode = fileUtils.getPathEncode(
-            fileUtils.getPathReplace(rootType, pathParent))
+    # if pathParent == pathRoot:
+    #     fileItem.path_encode = fileUtils.getPathEncode("")
+    # else:
+    fileItem.path_encode = fileUtils.getPathEncode(
+        fileUtils.getPathReplace(rootType, pathParent))
 
     # Display Path
     fileItem.folder_current = fileUtils.getPathReplace(rootType, pathParent)
 
     fileItem.file_path = ""
     fileItem.is_parent = True
+
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] fileItem:', fileItem)    
+
     fileItems.insert(0, fileItem)  # Add to List
     return fileItems
 
@@ -141,7 +145,7 @@ def list_folder_and_file_by_path(rootType: str, pathEncode: str):
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] target_name:', target_name)
 
         # Make FilePath
-        target_path = os.path.join(pathFull, target_name)
+        target_path = fileUtils.pathJoin(pathFull, target_name)
 
         # Check File or Folder
         if isdir(target_path):
@@ -188,14 +192,14 @@ def folder_action(folderItem: FolderItem):
     new_folder_name = fileUtils.getPathDecode(folderItem.new_folder_name_encode)
 
     # New Folder Check        
-    if not fileUtils.is_valid_filename(new_folder_name):
+    if new_folder_name and not fileUtils.is_valid_filename(new_folder_name):
         requestResult.msg = f"유효하지 않은 Folder명입니다.[{new_folder_name}]"
         return requestResult    
 
     if folderItem.folder_command == const.FOLDER_ACTION_RENAME_CURRENT:
         # Check
         if isRoot:
-            requestResult.msg = f"Root Folder에 대한 수정은 허용되지 않습니다.[{new_folder_name}]"
+            requestResult.msg = f"Root Folder에 대한 수정은 허용되지 않습니다."
             return requestResult
         
         # Get Base Folder
@@ -205,32 +209,42 @@ def folder_action(folderItem: FolderItem):
             return requestResult
         
         pathParent = Path(fullPathFrom).parent.__str__()
-        fullPathTo = os.path.join(pathParent, new_folder_name)
+        fullPathTo = fileUtils.pathJoin(pathParent, new_folder_name)
 
         requestResult = fileUtils.mvFolder(fullPathFrom, fullPathTo)
         if requestResult:
             return requestResult
         
         folderItem.path_encode = fileUtils.getPathEncode(fileUtils.getPathReplace(folderItem.root_type, fullPathTo))
-        folderItem.new_folder_name_display = fileUtils.getDisplayFileName(new_folder_name)
-
-        if config.IS_DEBUG:
-            print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] folderItem Return:', folderItem)            
+        folderItem.new_folder_name_display = fileUtils.getPathReplace(folderItem.root_type, fullPathTo)
         # End----------------
     elif folderItem.folder_command == const.FOLDER_ACTION_ADD_SUB_FOLDER:
-        fullPathTo = os.path.join(fullPathFrom, new_folder_name)
+        fullPathTo = fileUtils.pathJoin(fullPathFrom, new_folder_name)
 
         add_folder_status = fileUtils.addFolder(fullPathTo)
         if add_folder_status:
             requestResult.msg = f"하위 Folder 생성시 예외 발생 [{add_folder_status}]"
             return requestResult
+        folderItem.path_encode = fileUtils.getPathEncode(fileUtils.getPathReplace(folderItem.root_type, fullPathFrom))
+        folderItem.new_folder_name_display = fileUtils.getPathReplace(folderItem.root_type, fullPathFrom)
         # End----------------
-    elif folderItem.folder_command == const.FOLDER_ACTION_ADD_SUB_FOLDER:
-        # End----------------        
-        return ""
     elif folderItem.folder_command == const.FOLDER_ACTION_DELETE_CURRENT:
+        # Check
+        if isRoot:
+            requestResult.msg = f"Root Folder에 대한 삭제는 허용되지 않습니다."
+            return requestResult
+        
+        # Get Parent
+        pathParent = Path(fullPathFrom).parent.__str__()
+
+        requestResult = fileUtils.deleteFolderAndFile(fullPathFrom)
+        if requestResult:
+            return requestResult
+                
+        folderItem.path_encode = fileUtils.getPathEncode(fileUtils.getPathReplace(folderItem.root_type, pathParent))
+        folderItem.new_folder_name_display = fileUtils.getPathReplace(folderItem.root_type, pathParent)
         # End----------------
-        return ""
+        
     else:
         requestResult.msg = f"정의되지 않은 명령어 유형입니다. [{folderItem.folder_command}]"
         return requestResult

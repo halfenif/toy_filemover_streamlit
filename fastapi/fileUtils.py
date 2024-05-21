@@ -59,7 +59,18 @@ def getPathDecode(path):
 
 
 def getPathReplace(pathType, path):
-    return path.replace(fileUtils.getPathRoot(pathType), "")
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathType:', pathType)
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] path:', path)
+    
+    pathRoot = pathJoin(fileUtils.getPathRoot(pathType),"")
+    pathFrom = pathJoin(path,"")
+
+    replaceResult = pathFrom.replace(pathRoot, "")
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] replaceResult:', replaceResult)
+
+    return replaceResult
 
 
 def getPathRoot(pathType):
@@ -105,8 +116,7 @@ def getFullPath(locationType: str, pathEncode: str):
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] Before Join:')    
 
         isRoot = False
-        pathFull = os.path.join(
-            fileUtils.getPathRoot(locationType), pathDecode)
+        pathFull = pathJoin(fileUtils.getPathRoot(locationType), pathDecode)
         
     # Debug
     if config.IS_DEBUG:        
@@ -163,8 +173,21 @@ def getDisplayFileName(inputFileName):
 # 추가------------------
 
 
+def pathJoin(pathPre, pathSur):
+
+    # Debug
+    if config.IS_DEBUG:        
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathPre:', pathPre)    
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathSur:', pathSur)    
+
+    pathResultWithSlash = os.path.join("/", *pathPre.split("/"), *pathSur.split("/"))
+    pathResult = os.path.normpath(pathResultWithSlash)
+    if config.IS_DEBUG:        
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathResult:', pathResult)    
+    return pathResult
+
 def existFileAndFolder(pathType, path):
-    decodePath = os.path.join(getPathRoot(pathType), getPathDecode(path))
+    decodePath = pathJoin(getPathRoot(pathType), getPathDecode(path))
 
     if os.path.exists(decodePath):
         return decodePath
@@ -229,11 +252,27 @@ def mvFolder(fullPathFrom, fullPathTo):
     return None
 
 
-def deleteFolderAndFile(pathType, path):
-    try:
-        pathTarget = os.path.join(getPathRoot(pathType), path)
-        print(f'[fileUtils.py][deleteFolderAndFile pathTarget:', pathTarget)
+def deleteFolderAndFile(pathTarget):
 
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] pathTarget:', pathTarget)
+
+    try:
+        
+        if not (pathTarget.startswith(getPathRoot(const.PATH_LOCATION_SOURCE)) or pathTarget.startswith(getPathRoot(const.PATH_LOCATION_TARGET))):
+            requestResult = RequestResult()
+            requestResult.result = const.RESULT_FAIL
+            requestResult.msg = "삭제요청된 경로가 SOURCE, TARGET 하위경로가 아닙니다."
+            requestResult.method = f'{inspect.stack()[0][3]}'
+            return requestResult
+        
+        if pathTarget == getPathRoot(const.PATH_LOCATION_SOURCE) or pathTarget == getPathRoot(const.PATH_LOCATION_TARGET):
+            requestResult = RequestResult()
+            requestResult.result = const.RESULT_FAIL
+            requestResult.msg = f"Root경로는 삭제 할 수 없습니다.[{pathTarget}]"
+            requestResult.method = f'{inspect.stack()[0][3]}'
+            return requestResult
+                
         if os.path.isdir(pathTarget):
             shutil.rmtree(pathTarget, True)
 
@@ -241,16 +280,27 @@ def deleteFolderAndFile(pathType, path):
             os.remove(pathTarget)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] os exception:', str(e))
+        requestResult = RequestResult()
+        requestResult.result = const.RESULT_FAIL
+        requestResult.msg = str(e)
+        requestResult.method = f'{inspect.stack()[0][3]}'
+        return requestResult
+
+    return None
     
 def is_valid_filename(filename):
     # 허용되지 않는 문자를 포함하는지 검사
-    invalid_chars = r'<>:"/\|?*'
+    invalid_chars = r'<>:"/\|?*{}'
 
     result = True
 
     # 빈 문자열 검사
     if not filename:
+        result = False
+    elif filename.startswith("."):
+        result = False
+    elif filename.endswith("."):
         result = False
     elif any(char in invalid_chars for char in filename):
         result = False
