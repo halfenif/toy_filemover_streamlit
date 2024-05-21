@@ -27,7 +27,7 @@ cp ./streamlit/.env.sample ./streamlit/.env
 - MPD_SERVER_IP, MPD_SERVER_PORT = if you use MPD
 - UI_OPTION_SHORT_FILE_NAME = bool. Display button label short or not
 - UI_OPTION_SHORT_FILE_LENGTH = int. Display button label char count
-- FILE_OPTION_UPLOAD_LIMIT_MB = int. Use .env insted streamlit/.streamlit/config.toml
+- FILE_OPTION_UPLOAD_LIMIT_MB = int. Use .env insted of streamlit/.streamlit/config.toml
 
 **streamlit/.env**
 - ENV_TYPE = ".env.sample" > ".env" Display Information
