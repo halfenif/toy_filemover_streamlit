@@ -311,3 +311,28 @@ def is_valid_filename(filename):
         print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] result:', result)
 
     return result
+
+def write_file(fileByte, filePath):
+
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] filePath:', filePath)
+
+    if os.path.exists(filePath):
+        requestResult = RequestResult()
+        requestResult.result = const.RESULT_FAIL
+        requestResult.msg = f"존재하는 파일경로 입니다.[{filePath}]"
+        requestResult.method = f'{inspect.stack()[0][3]}'
+        return requestResult
+    
+    try:
+        with open(filePath, "wb") as file:
+            file.write(fileByte)
+    except Exception as e:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] exception:', str(e))
+        requestResult = RequestResult()
+        requestResult.result = const.RESULT_FAIL
+        requestResult.msg = str(e)
+        requestResult.method = f'{inspect.stack()[0][3]}'
+        return requestResult
+    
+    return None

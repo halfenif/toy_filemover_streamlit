@@ -13,7 +13,7 @@ from session import S_CURRENT_ROOT_TYPE # 상단의 Header Folder용
 from session import S_SB_STATE, S_SB_TAG_SELECT, S_SB_FOLDER_SELECT # Modal대신 Sidebar를 사용하긿 함
 
 import streamlit as st
-from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path, folder_action
+from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path, folder_action, upload_file
 from datetime import datetime 
 import uuid
 import os
@@ -268,7 +268,7 @@ if st.session_state[S_SB_FOLDER_SELECT]:
             elif genre == r_item_addSub:
                 folder_item_add_sub = st.text_input("Sub Folder Name", "", key="folderItem_subFolderBaseName", max_chars=200)
             elif genre == r_item_upload:
-                input_file = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])
+                folder_item_upload = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])
 
             # Set Button
             btn_col1, btn_col2 = st.columns([1,1])
@@ -297,37 +297,65 @@ if st.session_state[S_SB_FOLDER_SELECT]:
 
                     # Request Control
                     decode_new_folder = ""  
-                    if genre == r_item_rename:
-                        folderItem["folderCommand"] = FOLDER_ACTION_RENAME_CURRENT
-                        decode_new_folder = folder_item_rename
-                    elif genre == r_item_addSub:
-                        folderItem["folderCommand"] = FOLDER_ACTION_ADD_SUB_FOLDER
-                        decode_new_folder = folder_item_add_sub
-                    elif genre == r_item_delete:
-                        folderItem["folderCommand"] = FOLDER_ACTION_DELETE_CURRENT
-                        decode_new_folder = ""
+
+                    if genre == r_item_rename or genre == r_item_addSub or genre == r_item_delete:
+                        if genre == r_item_rename:
+                            if not folder_item_rename:
+                                st.error("Folder명을 입력하십시오.")
+                                st.stop()
+
+                            folderItem["folderCommand"] = FOLDER_ACTION_RENAME_CURRENT
+                            decode_new_folder = folder_item_rename
+                        elif genre == r_item_addSub:
+                            if not folder_item_add_sub:
+                                st.error("Folder명을 입력하십시오.")
+                                st.stop()
+
+                            folderItem["folderCommand"] = FOLDER_ACTION_ADD_SUB_FOLDER
+                            decode_new_folder = folder_item_add_sub
+                        elif genre == r_item_delete:
+                            folderItem["folderCommand"] = FOLDER_ACTION_DELETE_CURRENT
+                            decode_new_folder = ""
+
+                        # New Folder Encode
+                        encode_status, encode_new_folder = utils.getPathEncode(decode_new_folder)
+                        if encode_status:
+                            st.stop()
+                        folderItem["newFolderNameEncode"] = encode_new_folder
+
+                        # Call Server
+                        folder_action_status_code, folder_action_result = folder_action(folderItem)
+                        if not folder_action_status_code == 200:
+                            st.stop()
+
+                        # Success
+                        if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
+                            st.session_state[S_CURRENT_SOURCE_FOLDER] = folder_action_result["pathEncode"]
+                            st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
+                        elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
+                            st.session_state[S_CURRENT_TARGET_FOLDER] = folder_action_result["pathEncode"]
+                            st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
+                        
+
                     elif genre == r_item_upload:
+
+                        if folder_item_upload is None:
+                            st.error("File을 선택하십시오.")
+                            st.stop()
+
                         folderItem["folderCommand"] = FOLDER_ACTION_UPLOAD_FILE
-                        decode_new_folder = ""
+                        fileItem = {}
+                        fileItem["rootType"] = st.session_state[S_CURRENT_ROOT_TYPE]
+                        fileItem["pathEncode"] = st.session_state[S_CURRENT_SOURCE_FOLDER]
+                        encode_status, encode_upload_file = utils.getPathEncode(folder_item_upload.name)
+                        fileItem["fileName"] = encode_upload_file
 
-                    # New Folder Encode
-                    encode_status, encode_new_folder = utils.getPathEncode(decode_new_folder)
-                    if encode_status:
-                        st.stop()
-                    folderItem["newFolderNameEncode"] = encode_new_folder
+                        upload_action_status_code, upload_action_result = upload_file(folder_item_upload, fileItem)
+                        if not upload_action_status_code == 200:
+                            st.stop()
 
-                    # Call Server
-                    folder_action_status_code, folder_action_result = folder_action(folderItem)
-                    if not folder_action_status_code == 200:
-                        st.stop()
 
-                    # Success
-                    if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
-                        st.session_state[S_CURRENT_SOURCE_FOLDER] = folder_action_result["pathEncode"]
-                        st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
-                    elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
-                        st.session_state[S_CURRENT_TARGET_FOLDER] = folder_action_result["pathEncode"]
-                        st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
+
 
                     # Sidebar Control
                     st.session_state[S_SB_FOLDER_SELECT] = False

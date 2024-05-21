@@ -250,3 +250,17 @@ def folder_action(folderItem: FolderItem):
         return requestResult
 
     return folderItem
+
+
+def upload_file(file, fileItem: FileItem):
+
+    pathRoot = fileUtils.getPathRoot(fileItem.root_type)
+    pathFolder = fileUtils.getPathDecode(fileItem.path_encode)
+    fileName = fileUtils.getPathDecode(fileItem.file_name)
+
+
+
+    fullPathTo = fileUtils.pathJoin(pathRoot, pathFolder)
+    fullPathTo = fileUtils.pathJoin(fullPathTo, fileName)
+
+    return fileUtils.write_file(file,fullPathTo)

@@ -6,6 +6,7 @@ import requests
 import streamlit as st
 import const
 import inspect
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 # interact with FastAPI endpoint
 backend = config.URL_BACKEND
@@ -72,6 +73,26 @@ def file_write_taginfo_by_path(tagitem: any):
 def folder_action(folderitem: any):
     try:
         response = requests.get(backend + inspect.stack()[0][3], params=folderitem)
+        return result_check(response)
+    except requests.exceptions.RequestException as e:
+        request_exception(e, inspect.stack()[0][3])
+
+def upload_file(file, fileItem):
+
+    #audio/ogg
+    #audio/flac
+
+    mp_encoder = MultipartEncoder(fields={"file": ("filename", file, "audio/mpeg")})
+
+    headers = {
+        'Content-Type': mp_encoder.content_type,
+        'Root-Type': fileItem["rootType"],
+        'Path-Encode': fileItem["pathEncode"],
+        'File-Name': fileItem["fileName"],
+    }    
+
+    try:
+        response = requests.post(backend + inspect.stack()[0][3], data=mp_encoder, headers=headers, timeout=8000)
         return result_check(response)
     except requests.exceptions.RequestException as e:
         request_exception(e, inspect.stack()[0][3])
