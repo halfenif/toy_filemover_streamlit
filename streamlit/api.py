@@ -68,3 +68,10 @@ def file_write_taginfo_by_path(tagitem: any):
         return result_check(response)
     except requests.exceptions.RequestException as e:
         request_exception(e, inspect.stack()[0][3])
+
+def folder_action(folderitem: any):
+    try:
+        response = requests.get(backend + inspect.stack()[0][3], params=folderitem)
+        return result_check(response)
+    except requests.exceptions.RequestException as e:
+        request_exception(e, inspect.stack()[0][3])

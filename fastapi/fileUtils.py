@@ -183,7 +183,7 @@ def addFolder(pathType, path, folderName):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def mvFolderAndFile(fullPathFrom, fullPathTo):
+def mvFile(fullPathFrom, fullPathTo):
     # Debug
     if config.IS_DEBUG:
         print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] fullPathFrom:', fullPathFrom)
@@ -193,6 +193,29 @@ def mvFolderAndFile(fullPathFrom, fullPathTo):
         shutil.copy(fullPathFrom, fullPathTo)
         os.remove(fullPathFrom)
         # os.rename(fullPathFrom, fullPathTo)
+        # os.makedirs(pathTarget)
+        # 8진수로 파이썬3는 앞에 0o를 붙어야한다.
+        os.chmod(fullPathTo, 0o777)
+    except Exception as e:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] os exception:', str(e))
+        requestResult = RequestResult()
+        requestResult.result = const.RESULT_FAIL
+        requestResult.msg = str(e)
+        requestResult.method = f'{inspect.stack()[0][3]}'
+        return requestResult
+    
+    return None
+
+def mvFolder(fullPathFrom, fullPathTo):
+    # Debug
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] fullPathFrom:', fullPathFrom)
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] fullPathTo:', fullPathTo)    
+
+    try:
+        # shutil.copy(fullPathFrom, fullPathTo)
+        # os.remove(fullPathFrom)
+        os.rename(fullPathFrom, fullPathTo)
         # os.makedirs(pathTarget)
         # 8진수로 파이썬3는 앞에 0o를 붙어야한다.
         os.chmod(fullPathTo, 0o777)
@@ -222,11 +245,20 @@ def deleteFolderAndFile(pathType, path):
         raise HTTPException(status_code=500, detail=str(e))
     
 def is_valid_filename(filename):
-    # 파일명에 허용되지 않는 문자 패턴
-    invalid_chars_pattern = r'[\\/:\*\?"<>\|]'  # 슬래시, 역슬래시, 콜론, 별표, 물음표, 큰따옴표, 부등호, 세미콜론, 수직바
+    # 허용되지 않는 문자를 포함하는지 검사
+    invalid_chars = r'<>:"/\|?*'
 
-    # 파일명에 허용되지 않는 문자 확인
-    if re.search(invalid_chars_pattern, filename):
-        return False
-    else:
-        return True
+    result = True
+
+    # 빈 문자열 검사
+    if not filename:
+        result = False
+    elif any(char in invalid_chars for char in filename):
+        result = False
+
+    # Debug
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] filename:', filename)
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] result:', result)
+
+    return result

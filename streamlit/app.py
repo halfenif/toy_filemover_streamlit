@@ -3,6 +3,7 @@ from env import Settings
 config = Settings()
 
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, PATH_TYPE_FOLDER, PATH_TYPE_FILE
+from const import FOLDER_ACTION_RENAME_CURRENT, FOLDER_ACTION_ADD_SUB_FOLDER, FOLDER_ACTION_DELETE_CURRENT, FOLDER_ACTION_UPLOAD_FILE
 
 from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER # rerun() 했을 때 화면 갱신용
 from session import S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY # rerun() 했을 때 화면 갱신용
@@ -12,7 +13,7 @@ from session import S_CURRENT_ROOT_TYPE # 상단의 Header Folder용
 from session import S_SB_STATE, S_SB_TAG_SELECT, S_SB_FOLDER_SELECT # Modal대신 Sidebar를 사용하긿 함
 
 import streamlit as st
-from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path
+from api import list_folder_and_file_by_path, file_read_taginfo_by_path, file_write_taginfo_by_path, folder_action
 from datetime import datetime 
 import uuid
 import os
@@ -260,34 +261,78 @@ if st.session_state[S_SB_FOLDER_SELECT]:
                     "Select Action",
                     [r_item_rename, r_item_addSub, r_item_delete, r_item_upload])
 
-            # Rename Base
+            # Display Control
             if genre == r_item_rename:
-                st.text_input("Folder Name", folderBaseName, key="folderItem_folderBaseName", max_chars=200, disabled=False)
-
-            # Add Child Folder
+                folder_item_rename = st.text_input("Folder Name", folderBaseName, key="folderItem_folderBaseName", max_chars=200, disabled=False)
             elif genre == r_item_addSub:
-                st.text_input("Sub Folder Name", "", key="folderItem_subFolderBaseName", max_chars=200)
-                        
-            # Upload File
+                folder_item_add_sub = st.text_input("Sub Folder Name", "", key="folderItem_subFolderBaseName", max_chars=200)
             elif genre == r_item_upload:
-                input_file = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])  # upload widget
+                input_file = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])
 
             # Set Button
             btn_col1, btn_col2 = st.columns([1,1])
 
-            with btn_col1:
-                form_submited = st.button(label='Submit')
-                if form_submited:
-                    st.session_state[S_SB_FOLDER_SELECT] = False
-                    st.session_state[S_SB_STATE] = "collapsed"
-                    st.rerun()  
-
+            # Cancel 버튼을 먼저 그린다.
             with btn_col2:
                 form_canceled = st.button(label='Cancel')
                 if form_canceled:
                     st.session_state[S_SB_FOLDER_SELECT] = False
                     st.session_state[S_SB_STATE] = "collapsed"
+                    st.rerun()            
+
+            with btn_col1:
+                form_submited = st.button(label='Submit')
+                if form_submited:
+
+
+                    # Param Class
+                    folderItem = {}
+
+                    folderItem["rootType"] = st.session_state[S_CURRENT_ROOT_TYPE]
+                    
+
+                    if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
+                        folderItem["pathEncode"] = st.session_state[S_CURRENT_SOURCE_FOLDER]
+                    elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
+                        folderItem["pathEncode"] = st.session_state[S_CURRENT_TARGET_FOLDER]
+
+                    # Request Control
+                    if genre == r_item_rename:
+                        folderItem["folderCommand"] = FOLDER_ACTION_RENAME_CURRENT
+                        folderItem["newFolderName"] = folder_item_rename
+                        status_code, result = folder_action(folderItem)
+
+                        if not status_code == 200:
+                            st.stop()
+
+                        if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
+                            st.session_state[S_CURRENT_SOURCE_FOLDER] = result["pathEncode"]
+                            st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = result["newFolderName"]
+                        elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
+                            st.session_state[S_CURRENT_TARGET_FOLDER] = result["pathEncode"]
+                            st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = result["newFolderName"]
+                            
+                            
+
+
+                    elif genre == r_item_addSub:
+                        folderItem["folderCommand"] = FOLDER_ACTION_ADD_SUB_FOLDER
+                        folderItem["newFolderName"] = folder_item_add_sub
+                        folder_action(folderItem)
+                    elif genre == r_item_delete:
+                        folderItem["folderCommand"] = FOLDER_ACTION_DELETE_CURRENT
+                        folderItem["newFolderName"] = ""
+                        folder_action(folderItem)
+                    elif genre == r_item_upload:
+                        folderItem["folderCommand"] = FOLDER_ACTION_UPLOAD_FILE
+                        folderItem["newFolderName"] = ""
+
+                    # Sidebar Control
+                    st.session_state[S_SB_FOLDER_SELECT] = False
+                    st.session_state[S_SB_STATE] = "collapsed"                        
                     st.rerun()
+
+
 
         st.stop()
 

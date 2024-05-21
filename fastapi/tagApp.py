@@ -83,7 +83,7 @@ def file_write_taginfo_by_path(tagItem: TagItem):
     
     if doMv:
         pathFullRight = os.path.join("/", *pathParent.split("/"), *check_right_file_name.split("/"))
-        mvResult = fileUtils.mvFolderAndFile(pathFullLeft, pathFullRight)
+        mvResult = fileUtils.mvFile(pathFullLeft, pathFullRight)
         if mvResult:
             return mvResult
     

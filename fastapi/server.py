@@ -12,7 +12,7 @@ import tagApp
 
 from FileItem import FileItem
 from TagItem import TagItem
-
+from FolderItem import FolderItem
 
 
 # --------------------------------------------------------------
@@ -59,3 +59,13 @@ def file_write_taginfo_by_path(tagItem: TagItem = Depends()):
         print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] tagItem:', tagItem)
 
     return tagApp.file_write_taginfo_by_path(tagItem)
+
+
+# Folder Action
+@app.get("/folder_action")
+def folder_action(folderItem: FolderItem = Depends()):
+    # Debug
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] folderItem:', folderItem)
+
+    return folderApp.folder_action(folderItem)
