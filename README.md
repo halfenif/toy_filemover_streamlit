@@ -23,10 +23,11 @@ cp ./streamlit/.env.sample ./streamlit/.env
 ```
 **fastapi/.env**
 - ENV_TYPE = ".env.sample" > ".env" Display Information
-- IS_DEBUG = True or False
+- IS_DEBUG = bool
 - MPD_SERVER_IP, MPD_SERVER_PORT = if you use MPD
-- UI_OPTION_SHORT_FILE_NAME=True or False. Button Label display option
-- UI_OPTION_SHORT_FILE_LENGTH=number. Display Label Char count
+- UI_OPTION_SHORT_FILE_NAME = bool. Display button label short or not
+- UI_OPTION_SHORT_FILE_LENGTH = int. Display button label char count
+- FILE_OPTION_UPLOAD_LIMIT_MB = int. Use .env insted streamlit/.streamlit/config.toml
 
 **streamlit/.env**
 - ENV_TYPE = ".env.sample" > ".env" Display Information
@@ -35,9 +36,9 @@ cp ./streamlit/.env.sample ./streamlit/.env
 - UI_OPTION_DESC = str, st.write(), if "" is None
 - UI_OPTION_SIDEBAR_WIDTH = int, st.sidebar width
 - TAG_DATE_BEGIN, TAG_TARCK_END = int tag default value
-- TAG_OPTION_WHIP = True or False. Check Box Defualt Value
-- TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE = True or False. Check Box Defualt Value
-- TAG_OPTION_MPD_UPDATE = True or False. Check Box Defualt Value
+- TAG_OPTION_WHIP = bool. Check Box Defualt Value
+- TAG_OPTION_MOVE_SOURCE_TO_TARGET, TAG_OPTION_MOVE_TARGET_TO_SOURCE = bool. Check Box Defualt Value
+- TAG_OPTION_MPD_UPDATE = bool. Check Box Defualt Value
 
 
 ### Docker-Compose

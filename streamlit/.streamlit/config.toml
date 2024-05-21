@@ -2,4 +2,4 @@
 toolbarMode = "viewer"
 
 [server]
-maxUploadSize = 1
+#maxUploadSize = 1

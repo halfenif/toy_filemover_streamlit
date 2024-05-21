@@ -15,7 +15,7 @@ from TagItem import TagItem
 from FolderItem import FolderItem
 import const
 from RequestResult import RequestResult
-
+import fileUtils
 
 # --------------------------------------------------------------
 # Application
@@ -76,6 +76,18 @@ def folder_action(folderItem: FolderItem = Depends()):
 @app.post("/upload_file")
 def upload_file(request: Request, file: bytes = File(...)):
 
+    
+    if config.IS_DEBUG:
+        print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] file size:', len(file))
+
+
+    if len(file) > config.FILE_OPTION_UPLOAD_LIMIT_MB * 1024 * 1024:
+        fileSizeFmt = fileUtils.getFileSizeFmt(len(file))
+        requestResult = RequestResult()
+        requestResult.result = const.RESULT_FAIL
+        requestResult.msg = f"Upload File Size 제한({fileSizeFmt} > {config.FILE_OPTION_UPLOAD_LIMIT_MB}MB)"
+        requestResult.method = f'{inspect.stack()[0][3]}'
+        return requestResult        
 
     headers = dict(request.headers)
     # Debug

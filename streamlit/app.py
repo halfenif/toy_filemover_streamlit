@@ -268,7 +268,7 @@ if st.session_state[S_SB_FOLDER_SELECT]:
             elif genre == r_item_addSub:
                 folder_item_add_sub = st.text_input("Sub Folder Name", "", key="folderItem_subFolderBaseName", max_chars=200)
             elif genre == r_item_upload:
-                folder_item_upload = st.file_uploader("Select File", type=['mp3','flac', 'ogg'])
+                folder_item_upload = st.file_uploader("Select File", type=['mp3','flac', 'ogg'], label_visibility="hidden")
 
             # Set Button
             btn_col1, btn_col2 = st.columns([1,1])
