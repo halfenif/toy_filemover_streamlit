@@ -107,6 +107,9 @@ def addParentFolder(fileItems, pathCurrent, rootType):
         fileItem.path_encode = fileUtils.getPathEncode(
             fileUtils.getPathReplace(rootType, pathParent))
 
+    # Display Path
+    fileItem.folder_current = fileUtils.getPathReplace(rootType, pathParent)
+
     fileItem.file_path = ""
     fileItem.is_parent = True
     fileItems.insert(0, fileItem)  # Add to List
