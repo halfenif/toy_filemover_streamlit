@@ -296,47 +296,45 @@ if st.session_state[S_SB_FOLDER_SELECT]:
                         folderItem["pathEncode"] = st.session_state[S_CURRENT_TARGET_FOLDER]
 
                     # Request Control
+                    decode_new_folder = ""  
                     if genre == r_item_rename:
                         folderItem["folderCommand"] = FOLDER_ACTION_RENAME_CURRENT
-                        encode_status, encode_new_folder = utils.getPathEncode(folder_item_rename)
-                        if encode_status:
-                            st.stop()
-
-                        folderItem["newFolderNameEncode"] = encode_new_folder
-                        status_code, result = folder_action(folderItem)
-
-                        if not status_code == 200:
-                            st.stop()
-
-                        if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
-                            st.session_state[S_CURRENT_SOURCE_FOLDER] = result["pathEncode"]
-                            st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = result["newFolderNameDisplay"]
-                        elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
-                            st.session_state[S_CURRENT_TARGET_FOLDER] = result["pathEncode"]
-                            st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = result["newFolderNameDisplay"]
-                            
-                            
-
-
+                        decode_new_folder = folder_item_rename
                     elif genre == r_item_addSub:
                         folderItem["folderCommand"] = FOLDER_ACTION_ADD_SUB_FOLDER
-                        folderItem["newFolderNameEncode"] = folder_item_add_sub
-                        folder_action(folderItem)
+                        decode_new_folder = folder_item_add_sub
                     elif genre == r_item_delete:
                         folderItem["folderCommand"] = FOLDER_ACTION_DELETE_CURRENT
-                        folderItem["newFolderNameEncode"] = ""
-                        folder_action(folderItem)
+                        decode_new_folder = ""
                     elif genre == r_item_upload:
                         folderItem["folderCommand"] = FOLDER_ACTION_UPLOAD_FILE
-                        folderItem["newFolderNameEncode"] = ""
+                        decode_new_folder = ""
+
+                    # New Folder Encode
+                    encode_status, encode_new_folder = utils.getPathEncode(decode_new_folder)
+                    if encode_status:
+                        st.stop()
+                    folderItem["newFolderNameEncode"] = encode_new_folder
+
+                    # Call Server
+                    folder_action_status_code, folder_action_result = folder_action(folderItem)
+                    if not folder_action_status_code == 200:
+                        st.stop()
+
+                    # Success
+                    if st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_SOURCE:
+                        st.session_state[S_CURRENT_SOURCE_FOLDER] = folder_action_result["pathEncode"]
+                        st.session_state[S_CURRENT_SOURCE_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
+                    elif st.session_state[S_CURRENT_ROOT_TYPE] == PATH_LOCATION_TARGET:
+                        st.session_state[S_CURRENT_TARGET_FOLDER] = folder_action_result["pathEncode"]
+                        st.session_state[S_CURRENT_TARGET_FOLDER_DISPLAY] = folder_action_result["newFolderNameDisplay"]
 
                     # Sidebar Control
                     st.session_state[S_SB_FOLDER_SELECT] = False
                     st.session_state[S_SB_STATE] = "collapsed"                        
                     st.rerun()
 
-
-
+        # Open Side인경우 본화면을 갱신하지 않기 위한 조치
         st.stop()
 
 #---------------------------------------------------------------------

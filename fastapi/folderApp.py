@@ -184,6 +184,11 @@ def folder_action(folderItem: FolderItem):
     
     new_folder_name = fileUtils.getPathDecode(folderItem.new_folder_name_encode)
 
+    # New Folder Check        
+    if not fileUtils.is_valid_filename(new_folder_name):
+        requestResult.msg = f"유효하지 않은 Folder명입니다.[{new_folder_name}]"
+        return requestResult    
+
     if folderItem.folder_command == const.FOLDER_ACTION_RENAME_CURRENT:
         # Check
         if isRoot:
@@ -192,14 +197,8 @@ def folder_action(folderItem: FolderItem):
         
         # Get Base Folder
         baseFolder = os.path.basename(fullPathFrom)
-
         if new_folder_name == baseFolder:
             requestResult.msg = f"기존 Folder명과 동일합니다.[{new_folder_name}]"
-            return requestResult
-
-        # New Folder Check        
-        if not fileUtils.is_valid_filename(new_folder_name):
-            requestResult.msg = f"유효하지 않은 Folder명입니다.[{new_folder_name}]"
             return requestResult
         
         pathParent = Path(fullPathFrom).parent.__str__()
@@ -214,18 +213,23 @@ def folder_action(folderItem: FolderItem):
 
         if config.IS_DEBUG:
             print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] folderItem Return:', folderItem)            
-        return folderItem
-
-
-
-        
+        # End----------------
     elif folderItem.folder_command == const.FOLDER_ACTION_ADD_SUB_FOLDER:
+        fullPathTo = os.path.join(fullPathFrom, new_folder_name)
+
+        add_folder_status = fileUtils.addFolder(fullPathTo)
+        if add_folder_status:
+            requestResult.msg = f"하위 Folder 생성시 예외 발생 [{add_folder_status}]"
+            return requestResult
+        # End----------------
+    elif folderItem.folder_command == const.FOLDER_ACTION_ADD_SUB_FOLDER:
+        # End----------------        
         return ""
     elif folderItem.folder_command == const.FOLDER_ACTION_DELETE_CURRENT:
+        # End----------------
         return ""
     else:
         requestResult.msg = f"정의되지 않은 명령어 유형입니다. [{folderItem.folder_command}]"
         return requestResult
 
-    requestResult.result = const.RESULT_FAIL # 초기화
-    return ""
+    return folderItem

@@ -4,6 +4,9 @@ import streamlit as st
 
 # 기본------------------
 def getPathEncode(path):
+    if path == "":
+        return ""
+    
     try:
         return None, base64.urlsafe_b64encode(bytes(path, const.ENC_TYPE)).decode(const.ENC_TYPE)
     except Exception as e:

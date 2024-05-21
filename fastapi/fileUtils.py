@@ -172,16 +172,15 @@ def existFileAndFolder(pathType, path):
         return None
 
 
-def addFolder(pathType, path, folderName):
+def addFolder(pathTarget):
     try:
-        pathTarget = os.path.join(getPathRoot(pathType), path, folderName)
-        print(f'pathTarget:', pathTarget)
         os.makedirs(pathTarget)
         # 8진수로 파이썬3는 앞에 0o를 붙어야한다.
         os.chmod(pathTarget, 0o777)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
+        return None
+    except Exception as e:
+        return str(e)
 
 def mvFile(fullPathFrom, fullPathTo):
     # Debug
