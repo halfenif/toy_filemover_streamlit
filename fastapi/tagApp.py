@@ -50,9 +50,19 @@ def file_write_taginfo_by_path(tagItem: TagItem):
     if stateCheck:
         return stateCheck
     
+
+
+    #------------------------------
+    # 삭제먼저 체크한다
+    if tagItem.doDeleteFile:
+        fileUtils.deleteFolderAndFile(pathFullLeft)
+        return tagItem
+
+    #------------------------------
+    #  Tag를 설정한다.
     stateCheck, tagItem = tagUtils.set_tag(pathFullLeft, tagItem)
     if stateCheck:
-        return stateCheck    
+        return stateCheck
 
     #------------------------------
     # File rename or mv
@@ -70,7 +80,7 @@ def file_write_taginfo_by_path(tagItem: TagItem):
         requestResult.msg = "Not Valid File Name"
         requestResult.method = f'{inspect.stack()[0][3]}'
         return requestResult        
-
+    
     if not check_left_file_name == check_right_file_name:
         doMv = True
     if tagItem.doMove:
@@ -86,7 +96,9 @@ def file_write_taginfo_by_path(tagItem: TagItem):
         mvResult = fileUtils.mvFile(pathFullLeft, pathFullRight)
         if mvResult:
             return mvResult
-    
+        
+    #------------------------------
+    # MPD를 update한다.
     if tagItem.doMpdUpdate:
         mpd_status = mpd_update_file()
         if mpd_status:

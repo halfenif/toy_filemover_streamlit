@@ -144,6 +144,10 @@ if st.session_state[S_SB_TAG_SELECT]:
                 # Options-MPD
                 st.checkbox("MPD Update :satellite_antenna: :loud_sound:", key="tagItem_doMpdUpdate", value=config.TAG_OPTION_MPD_UPDATE)
 
+                # Options-MPD
+                st.checkbox("DELETE File :boom:", key="tagItem_doDeleteFile", value=False)
+
+
                 # Set Button
                 btn_col1, btn_col2 = st.columns([1,1])
 
@@ -165,6 +169,7 @@ if st.session_state[S_SB_TAG_SELECT]:
                         tagItem['doWhip'] = st.session_state['tagItem_doWhip']
                         tagItem['doMove'] = st.session_state['tagItem_doMove']
                         tagItem['doMpdUpdate'] = st.session_state['tagItem_doMpdUpdate']
+                        tagItem['doDeleteFile'] = st.session_state['tagItem_doDeleteFile']
 
                         if tagItem['rootType'] == PATH_LOCATION_SOURCE:
                             tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_TARGET_FOLDER]
