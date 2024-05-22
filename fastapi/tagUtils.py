@@ -4,12 +4,17 @@ config = Settings()
 
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import EasyMP3
+from mutagen.flac import FLAC
+from mutagen.oggvorbis import OggVorbis
 
 import inspect
 from TagItem import TagItem
 from FileItem import FileItem
 
 from requestApp import internalError
+
+from RequestResult import RequestResult
+import const
 
 # Get ----------------------------------
 def get_tag(pathFull: str, fileItem: FileItem):
@@ -27,7 +32,18 @@ def get_tag(pathFull: str, fileItem: FileItem):
     
 
     try:
-        tag = EasyID3(pathFull)
+        if pathFull.lower().endswith(".mp3"):
+            tag = EasyID3(pathFull)
+        elif pathFull.lower().endswith(".flac"):
+            tag = FLAC(pathFull)
+        elif pathFull.lower().endswith(".ogg"):
+            tag = OggVorbis(pathFull)
+        else:
+            requestResult = RequestResult()
+            requestResult.result = const.RESULT_FAIL # 초기화
+            requestResult.method = f'{inspect.stack()[0][3]}'
+            requestResult.msg = "지원하지 않는 확장자 입니다."       
+            return requestResult, tagItem
 
         # Debug
         if config.IS_DEBUG:
@@ -70,7 +86,18 @@ def set_tag(pathFull: str, tagItem: TagItem):
         
 
     try:
-        tag = EasyMP3(pathFull)
+        if pathFull.lower().endswith(".mp3"):
+            tag = EasyID3(pathFull)
+        elif pathFull.lower().endswith(".flac"):
+            tag = FLAC(pathFull)
+        elif pathFull.lower().endswith(".ogg"):
+            tag = OggVorbis(pathFull)
+        else:
+            requestResult = RequestResult()
+            requestResult.result = const.RESULT_FAIL # 초기화
+            requestResult.method = f'{inspect.stack()[0][3]}'
+            requestResult.msg = "지원하지 않는 확장자 입니다."       
+            return requestResult, tagItem
 
         # Debug
         if config.IS_DEBUG:
