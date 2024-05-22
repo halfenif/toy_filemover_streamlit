@@ -10,7 +10,7 @@
 - Folder action: rename, add sub, delete, upload file
 - 3 Type format support: mp3, flac, ogg
 - File action: tag edit, file delete
-- MPD update(muliti)
+- MPD update(multi)
 
 ## Installation
 **Requirements**
