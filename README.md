@@ -1,6 +1,6 @@
 # Filemover for Home (MP3 Tag Manager)
 
-![Demo](https://github.com/halfenif/toy_filemover_streamlit/tree/main/doc/Screen01.png)
+![Demo](doc/Screen01.png)
 
 ## Demo
 [https://filemover.enif.page](https://filemover.enif.page)
