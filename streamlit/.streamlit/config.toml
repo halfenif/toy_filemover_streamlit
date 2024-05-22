@@ -3,3 +3,5 @@ toolbarMode = "viewer"
 
 [server]
 #maxUploadSize = 1
+enableXsrfProtection = false
+enableCORS = false
