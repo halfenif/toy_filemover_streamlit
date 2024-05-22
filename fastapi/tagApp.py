@@ -101,6 +101,10 @@ def file_write_taginfo_by_path(tagItem: TagItem):
     # MPD를 update한다.
     if tagItem.doMpdUpdate:
         mpd_status = mpd_update_file()
+
+        if config.IS_DEBUG:
+            print(f'[{inspect.getfile(inspect.currentframe())}][{inspect.stack()[0][3]}] mpd_status:', mpd_status)        
+
         if mpd_status:
             return mpd_status
 

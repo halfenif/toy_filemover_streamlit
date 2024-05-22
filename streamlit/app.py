@@ -151,6 +151,13 @@ if st.session_state[S_SB_TAG_SELECT]:
                 # Set Button
                 btn_col1, btn_col2 = st.columns([1,1])
 
+                with btn_col2:
+                    form_canceled = st.form_submit_button(label='Cancel')
+                    if form_canceled:
+                        st.session_state[S_SB_TAG_SELECT] = False
+                        st.session_state[S_SB_STATE] = "collapsed"
+                        st.rerun()                
+
                 with btn_col1:
                     form_submited = st.form_submit_button(label='Submit')
                     if form_submited:
@@ -176,19 +183,16 @@ if st.session_state[S_SB_TAG_SELECT]:
                         elif tagItem['rootType'] == PATH_LOCATION_TARGET:
                             tagItem['pathToMoveEncode'] = st.session_state[S_CURRENT_SOURCE_FOLDER]
 
-                        #Set Tag
-                        file_write_taginfo_by_path(tagItem)
+                        # Call Server
+                        tag_action_status_code, tag_action_result = file_write_taginfo_by_path(tagItem)
+                        if not tag_action_status_code == 200:
+                            st.stop()                        
 
                         st.session_state[S_SB_TAG_SELECT] = False
                         st.session_state[S_SB_STATE] = "collapsed"
                         st.rerun()
 
-                with btn_col2:
-                    form_canceled = st.form_submit_button(label='Cancel')
-                    if form_canceled:
-                        st.session_state[S_SB_TAG_SELECT] = False
-                        st.session_state[S_SB_STATE] = "collapsed"
-                        st.rerun()
+
 
 
         # End Modal Logic. Stop
