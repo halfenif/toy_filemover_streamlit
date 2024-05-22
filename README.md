@@ -5,6 +5,13 @@
 ## Demo
 [https://filemover.enif.page](https://filemover.enif.page)
 
+## Feature
+- 2 Folder concept: SOURCE & TARGET Folder
+- Folder action: rename, add sub, delete, upload file
+- 3 Type format support: mp3, flac, ogg
+- File action: tag edit, file delete
+- MPD update(muliti)
+
 ## Installation
 **Requirements**
 - Docker, Docker-Compose or Podman
