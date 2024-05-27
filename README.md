@@ -22,7 +22,7 @@ git clone https://github.com/halfenif/toy_filemover_streamlit.git
 ```
 
 ### Set MP3 Folder
-Default folder path **'/mnt/folder_source'** & **'/mnt/folder_target'**   
+Default folder path **'~/music/folder_source'** & **'~/music/folder_target'**   
 change docker-compose.yml file
 
 ## Change Config (Options)

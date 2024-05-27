@@ -8,8 +8,8 @@ services:
     networks:
       - deploy_network
     volumes:
-      - /mnt/folder_source:/app/source:Z # :Z flag for RedHat volume mount permission
-      - /mnt/folder_target:/app/target:Z
+      - ~/music/folder_source:/app/source:z
+      - ~/music/folder_target:/app/target:z
     container_name: filemover_fastapi
     restart: always
 
