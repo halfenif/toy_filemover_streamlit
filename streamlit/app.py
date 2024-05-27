@@ -37,7 +37,7 @@ if S_CURRENT_TARGET_FOLDER not in st.session_state:
 # Page Setup
 st.set_page_config(
     page_title="Filemover for Home",
-    page_icon=":musical_note:",
+    page_icon=":notes:",
     initial_sidebar_state=st.session_state[S_SB_STATE],
     menu_items={
         'About': """
