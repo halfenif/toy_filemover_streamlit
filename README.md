@@ -31,8 +31,8 @@ cp ./streamlit/.env.sample ./streamlit/.env
 ### Edit .env
 
 **./.env**  
-- FOLDER_SOURCE=""  
-- FOLDER_TARGET=""
+- FOLDER_SOURCE=""  # Your MP3 file input folder like Youtube-DL
+- FOLDER_TARGET=""  # MPD music folder
 
 1. Don't use symbolic link
 2. Docker run user is root
