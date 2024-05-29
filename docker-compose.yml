@@ -8,8 +8,8 @@ services:
     networks:
       - deploy_network
     volumes:
-      - ~/music/folder_source:/app/source:z
-      - ~/music/folder_target:/app/target:z
+      - ${FOLDER_SOURCE}:/app/source:z  # look .env
+      - ${FOLDER_TARGET}:/app/target:z  # look .env
     container_name: filemover_fastapi
     restart: always
 

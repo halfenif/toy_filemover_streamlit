@@ -21,15 +21,25 @@
 git clone https://github.com/halfenif/toy_filemover_streamlit.git
 ```
 
-### Set MP3 Folder
-Default folder path **'~/music/folder_source'** & **'~/music/folder_target'**   
-change docker-compose.yml file
-
-## Change Config (Options)
+## Change Config
 ```bash
+cp ./.env.sample ./.env
 cp ./fastapi/.env.sample ./fastapi/.env
 cp ./streamlit/.env.sample ./streamlit/.env
 ```
+
+### Edit .env
+
+**./.env**  
+- FOLDER_SOURCE=""  
+- FOLDER_TARGET=""
+
+1. Don't use symbolic link
+2. Docker run user is root
+3. Podman run user is login user
+4. Be carefull folder and file permission
+
+
 **fastapi/.env**
 - ENV_TYPE = ".env.sample" > ".env" Display Information
 - IS_DEBUG = bool
@@ -43,6 +53,8 @@ cp ./streamlit/.env.sample ./streamlit/.env
 - URL_BACKEND = fastAPI container URL
 - UI_OPTION_TITLE = str, st.title(), if "" is None
 - UI_OPTION_DESC = str, st.write(), if "" is None
+- UI_OPTION_LINK_TITLE = str, st.write(), if "" is None
+- UI_OPTION_LINK_URL = str, st.write(), if "" is None
 - UI_OPTION_SIDEBAR_WIDTH = int, st.sidebar width
 - TAG_DATE_BEGIN, TAG_TARCK_END = int tag default value
 - TAG_OPTION_WHIP = bool. Check Box Defualt Value

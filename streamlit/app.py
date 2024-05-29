@@ -4,6 +4,7 @@ config = Settings()
 
 from const import PATH_LOCATION_SOURCE, PATH_LOCATION_TARGET, PATH_TYPE_FOLDER, PATH_TYPE_FILE
 from const import FOLDER_ACTION_RENAME_CURRENT, FOLDER_ACTION_ADD_SUB_FOLDER, FOLDER_ACTION_DELETE_CURRENT, FOLDER_ACTION_UPLOAD_FILE
+from const import EMOJI_MUSIC, EMOJI_TAG
 
 from session import S_CURRENT_SOURCE_FOLDER, S_CURRENT_TARGET_FOLDER # rerun() 했을 때 화면 갱신용
 from session import S_CURRENT_SOURCE_FOLDER_DISPLAY, S_CURRENT_TARGET_FOLDER_DISPLAY # rerun() 했을 때 화면 갱신용
@@ -81,6 +82,9 @@ def fn_display_page_header(isAddReload: bool):
     
     if config.UI_OPTION_DESC:
         st.write(config.UI_OPTION_DESC)
+    
+    if config.UI_OPTION_LINK_TITLE and config.UI_OPTION_LINK_URL:
+        st.link_button(config.UI_OPTION_LINK_TITLE , config.UI_OPTION_LINK_URL)
     
     if isAddReload:
         #Reload Button for not submit escape

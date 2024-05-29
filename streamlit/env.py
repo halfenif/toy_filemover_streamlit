@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     IS_DEBUG: bool
     UI_OPTION_TITLE: str
     UI_OPTION_DESC: str
+    UI_OPTION_LINK_TITLE: str
+    UI_OPTION_LINK_URL: str
     UI_OPTION_SIDEBAR_WIDTH: int
     TAG_DATE_BEGIN: int
     TAG_TARCK_END: int
